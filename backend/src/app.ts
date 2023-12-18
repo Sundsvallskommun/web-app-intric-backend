@@ -278,7 +278,7 @@ class App {
         },
       },
       info: {
-        description: 'Web App Starter',
+        description: 'Qwerty chat app backend',
         title: 'API',
         version: '1.0.0',
       },

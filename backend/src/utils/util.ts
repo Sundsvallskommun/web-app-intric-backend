@@ -1,4 +1,4 @@
-import { API_BASE_URL, BASE_URL_PREFIX } from '@config';
+import { API_BASE_URL, BASE_URL_PREFIX, INTRIC_API_BASE_PATH, INTRIC_API_BASE_URL } from '@config';
 /**
  * @method isEmpty
  * @param {String | Number | Object} value
@@ -19,6 +19,8 @@ export const isEmpty = (value: string | number | object): boolean => {
   }
 };
 
+const withTrailingSlash = (url: string) => url + '/';
+
 export const localApi = (...parts: string[]): string => {
   const urlParts = [BASE_URL_PREFIX, ...parts];
   return urlParts.map(pathPart => pathPart.replace(/(\/$)/g, '')).join('/');
@@ -27,6 +29,11 @@ export const localApi = (...parts: string[]): string => {
 export const apiURL = (...parts: string[]): string => {
   const urlParts = [API_BASE_URL, ...parts];
   return urlParts.map(pathPart => pathPart.replace(/(^\/|\/$)/g, '')).join('/');
+};
+
+export const intricApiURL = (...parts: string[]): string => {
+  const urlParts = [INTRIC_API_BASE_URL, INTRIC_API_BASE_PATH, ...parts];
+  return withTrailingSlash(urlParts.map(pathPart => pathPart.replace(/(^\/|\/$)/g, '')).join('/'));
 };
 
 export const luhnCheck = (str = ''): boolean => {

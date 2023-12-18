@@ -2,6 +2,7 @@ import { HttpException } from '@/exceptions/HttpException';
 import { apiURL } from '@/utils/util';
 import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import ApiTokenService from './api-token.service';
+import IntricApiTokenService from './intric-api-token.service';
 
 class ApiResponse<T> {
   data: T;
@@ -10,8 +11,9 @@ class ApiResponse<T> {
 
 class ApiService {
   private apiTokenService = new ApiTokenService();
+  private intricApiTokenService = new IntricApiTokenService();
   private async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const token = await this.apiTokenService.getToken();
+    const token = await this.intricApiTokenService.getToken();
 
     const defaultHeaders = {
       Authorization: `Bearer ${token}`,
@@ -25,7 +27,6 @@ class ApiService {
       params: { ...defaultParams, ...config.params },
       url: apiURL(config.url),
     };
-
     try {
       const res = await axios(preparedConfig);
       return { data: res.data, message: 'success' };

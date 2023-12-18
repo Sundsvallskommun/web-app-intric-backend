@@ -28,7 +28,7 @@ module.exports = withBundleAnalyzer({
     defaultLocale: 'sv',
   },
   images: {
-    domains: [process.env.DOMAIN_NAME],
+    // domains: [process.env.DOMAIN_NAME],
     formats: ['image/avif', 'image/webp'],
   },
   basePath: process.env.BASE_PATH,
