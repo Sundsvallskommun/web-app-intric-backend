@@ -12,7 +12,7 @@ import { validationMiddleware } from '@/middlewares/validation.middleware';
 import ApiService from '@/services/api.service';
 import IntricApiService from '@/services/intric-api.service';
 import { ServerResponse } from 'http';
-import { Body, Controller, Delete, Get, HttpError, Param, Post, Req, Res, UseBefore } from 'routing-controllers';
+import { Body, Controller, Delete, Get, HttpError, Param, Post, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
 import { Stream } from 'stream';
 
 @Controller()
@@ -71,13 +71,19 @@ export class AssistantController {
   }
 
   @Post('/assistants/:assistant_id/sessions')
-  async ask_assistant(@Req() req: any, @Param('assistant_id') assistant_id: string, @Body() body, @Res() response: ServerResponse): Promise<any> {
+  async ask_assistant(
+    @Req() req: any,
+    @Param('assistant_id') assistant_id: string,
+    @QueryParam('stream') stream: boolean,
+    @Body() body,
+    @Res() response: ServerResponse,
+  ): Promise<any> {
     console.log('hm');
     if (!body?.body || body?.body === '') {
       throw new HttpError(400, 'Empty body');
     }
     console.log('the body:', body.body);
-    const stream = true;
+    // const stream = true;
     const url = `/assistants/${assistant_id}/sessions/`;
     const responseType = 'stream';
     const data: AskAssistant = {
@@ -109,6 +115,7 @@ export class AssistantController {
     @Req() req: any,
     @Param('assistant_id') assistant_id: string,
     @Param('session_id') session_id: string,
+    @QueryParam('stream') stream: boolean,
     @Body() body,
     @Res() response: ServerResponse,
   ): Promise<any> {
@@ -116,7 +123,7 @@ export class AssistantController {
       throw new HttpError(400, 'Empty body');
     }
     console.log('the body:', body.body);
-    const stream = true;
+    // const stream = false;
     const url = `/assistants/${assistant_id}/sessions/${session_id}/`;
     const responseType = 'stream';
     const data: AskAssistant = {
