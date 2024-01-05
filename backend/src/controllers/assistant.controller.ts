@@ -60,7 +60,7 @@ export class AssistantController {
   async get_assistant_sessions(@Param('id') id: string) {
     const url = `/assistants/${id}/sessions/`;
     const res = await this.intricApiService.get<PaginatedResponseSessionPublic>({ url });
-    return res.data.items;
+    return res.data;
   }
 
   @Get('/assistants/:id/sessions/:session_id')
