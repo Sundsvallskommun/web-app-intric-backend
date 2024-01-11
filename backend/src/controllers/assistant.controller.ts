@@ -8,6 +8,7 @@ import {
   SessionPublic,
 } from '@/data-contracts/intric/data-contracts';
 import { CreateAssistantDto, UpdateAssistantDto } from '@/dtos/assistant.dto';
+import hashMiddleware from '@/middlewares/hash.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
 import ApiService from '@/services/api.service';
 import IntricApiService from '@/services/intric-api.service';
@@ -71,6 +72,7 @@ export class AssistantController {
   }
 
   @Post('/assistants/:assistant_id/sessions')
+  @UseBefore(hashMiddleware)
   async ask_assistant(
     @Req() req: any,
     @Param('assistant_id') assistant_id: string,
@@ -78,12 +80,11 @@ export class AssistantController {
     @Body() body,
     @Res() response: ServerResponse,
   ): Promise<any> {
-    console.log('hm');
     if (!body?.body || body?.body === '') {
       throw new HttpError(400, 'Empty body');
     }
-    console.log('the body:', body.body);
-    // const stream = true;
+    const query = body?.body;
+    console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/`;
     const responseType = 'stream';
     const data: AskAssistant = {
@@ -111,6 +112,7 @@ export class AssistantController {
   }
 
   @Post('/assistants/:assistant_id/sessions/:session_id')
+  @UseBefore(hashMiddleware)
   async ask_followup(
     @Req() req: any,
     @Param('assistant_id') assistant_id: string,
@@ -122,8 +124,8 @@ export class AssistantController {
     if (!body?.body || body?.body === '') {
       throw new HttpError(400, 'Empty body');
     }
-    console.log('the body:', body.body);
-    // const stream = false;
+    const query = body?.body;
+    console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/${session_id}/`;
     const responseType = 'stream';
     const data: AskAssistant = {

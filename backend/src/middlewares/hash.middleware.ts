@@ -1,0 +1,21 @@
+import { NextFunction, Request, Response } from 'express';
+import { HttpException } from '@exceptions/HttpException';
+import { verifyHash } from '@/services/hash.service';
+
+const hashMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.headers);
+  const user = req.headers['_skuser'] as string;
+  const hash = req.headers['_skhash'] as string;
+  console.log({ user, hash });
+  try {
+    if (verifyHash(user, hash)) {
+      next();
+    } else {
+      next(new HttpException(401, 'Not Authorized'));
+    }
+  } catch (error) {
+    next(new HttpException(401, 'Failed to authorize'));
+  }
+};
+
+export default hashMiddleware;

@@ -12,6 +12,7 @@ const validateEnv = () => {
     INTRIC_API_BASE_PATH: str(),
     INTRIC_USERNAME: str(),
     INTRIC_PASSWORD: str(),
+    INTRIC_SALT: str(),
     PORT: port(),
     BASE_URL_PREFIX: str(),
     SAML_CALLBACK_URL: url(),

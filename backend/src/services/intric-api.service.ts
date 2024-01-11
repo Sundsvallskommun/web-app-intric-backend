@@ -28,7 +28,6 @@ class IntricApiService {
       params: { ...defaultParams, ...config.params },
       url: intricApiURL(config.url),
     };
-    console.log('using config:', preparedConfig);
     try {
       const res = await axios<T>(preparedConfig);
       return { data: res.data, message: 'success' };
