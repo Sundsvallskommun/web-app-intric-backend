@@ -1,18 +1,9 @@
-import {
-  CreateGroupRequest,
-  GroupPublic,
-  InfoBlobMetaDataUpsertPublic,
-  InfoBlobPublic,
-  InfoBlobUpsertPublic,
-  PaginatedResponseGroupPublic,
-  PaginatedResponseInfoBlobPublic,
-} from '@/data-contracts/intric/data-contracts';
-import { CreateGroupDto, UpdateGroupDto } from '@/dtos/group.dto';
+import { InfoBlobPublic, InfoBlobUpdatePublic, PaginatedResponseInfoBlobPublicNoText } from '@/data-contracts/intric/data-contracts';
 import { UpdateInfoBlobDto } from '@/dtos/info-blob.dto';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
 import ApiService from '@/services/api.service';
 import IntricApiService from '@/services/intric-api.service';
-import { Body, Controller, Delete, Get, Param, Post, Req, UseBefore } from 'routing-controllers';
+import { Body, Controller, Delete, Get, Param, Post, UseBefore } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
 
 @Controller()
@@ -24,9 +15,9 @@ export class InfoBlobController {
   @OpenAPI({
     summary: 'Get info blobs',
   })
-  async get_infoblobs(): Promise<PaginatedResponseInfoBlobPublic> {
+  async get_infoblobs(): Promise<PaginatedResponseInfoBlobPublicNoText> {
     const url = '/info-blobs/';
-    const res = await this.intricApiService.get<PaginatedResponseInfoBlobPublic>({ url });
+    const res = await this.intricApiService.get<PaginatedResponseInfoBlobPublicNoText>({ url });
     return res.data;
   }
 
@@ -47,7 +38,7 @@ export class InfoBlobController {
   @UseBefore(validationMiddleware(UpdateInfoBlobDto, 'body'))
   async update_infoblob(@Param('id') id: string, @Body() body: UpdateInfoBlobDto): Promise<InfoBlobPublic> {
     const url = `/info-blobs/${id}/`;
-    const res = await this.intricApiService.post<InfoBlobPublic, InfoBlobUpsertPublic>({ url, data: body });
+    const res = await this.intricApiService.post<InfoBlobPublic, InfoBlobUpdatePublic>({ url, data: body });
     return res.data;
   }
 
@@ -55,9 +46,9 @@ export class InfoBlobController {
   @OpenAPI({
     summary: 'Delete info blob',
   })
-  async delete_infoblob(@Param('id') id: string): Promise<GroupPublic> {
+  async delete_infoblob(@Param('id') id: string): Promise<InfoBlobPublic> {
     const url = `/info-blobs/${id}/`;
-    const res = await this.intricApiService.delete<GroupPublic>({ url });
+    const res = await this.intricApiService.delete<InfoBlobPublic>({ url });
     return res.data;
   }
 }

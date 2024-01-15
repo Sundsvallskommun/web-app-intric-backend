@@ -1,11 +1,7 @@
-import { AskResponse, PaginatedResponseGroupPublic } from '@/data-contracts/intric/data-contracts';
+import { PaginatedResponseGroupPublicWithMetadata } from '@/data-contracts/intric/data-contracts';
 import ApiService from '@/services/api.service';
 import IntricApiService from '@/services/intric-api.service';
-import { Response } from 'express';
-import { createReadStream } from 'fs';
-import { ServerResponse } from 'http';
-import { Body, ContentType, Controller, Get, Post, Req, Res } from 'routing-controllers';
-import { Readable } from 'stream';
+import { Controller, Get } from 'routing-controllers';
 
 @Controller()
 export class IndexController {
@@ -22,7 +18,7 @@ export class IndexController {
     const res = await this.intricApiService.get<any>({ url });
     console.log('Fetched me:');
     console.log(res);
-    const groups = await this.intricApiService.get<PaginatedResponseGroupPublic>({ url: '/groups/' });
+    const groups = await this.intricApiService.get<PaginatedResponseGroupPublicWithMetadata>({ url: '/groups/' });
     console.log('groups:');
     for (let item of groups.data.items) {
       console.log(item);

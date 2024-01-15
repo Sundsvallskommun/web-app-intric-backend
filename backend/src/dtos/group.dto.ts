@@ -1,5 +1,5 @@
-import { CreateGroupRequest, GroupUpdatePublic, InfoBlobUpsertPublic, InfoBlobUpsertRequest } from '@/data-contracts/intric/data-contracts';
-import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
+import { CreateGroupRequest, GroupUpdatePublic } from '@/data-contracts/intric/data-contracts';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateGroupDto implements CreateGroupRequest {
   @IsString()

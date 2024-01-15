@@ -4,7 +4,7 @@ import {
   GroupUpdatePublic,
   InfoBlobPublic,
   InfoBlobUpsertRequest,
-  PaginatedResponseGroupPublic,
+  PaginatedResponseGroupPublicWithMetadata,
   PaginatedResponseInfoBlobPublic,
 } from '@/data-contracts/intric/data-contracts';
 import { CreateGroupDto, UpdateGroupDto } from '@/dtos/group.dto';
@@ -24,16 +24,16 @@ export class GroupController {
   private intricApiService = new IntricApiService();
 
   @Get('/groups')
-  async get_user_groups(): Promise<PaginatedResponseGroupPublic> {
+  async get_user_groups(): Promise<PaginatedResponseGroupPublicWithMetadata> {
     const url = '/groups/';
-    const res = await this.intricApiService.get<PaginatedResponseGroupPublic>({ url });
+    const res = await this.intricApiService.get<PaginatedResponseGroupPublicWithMetadata>({ url });
     return res.data;
   }
 
   @Get('/groups/public')
-  async get_public_groups(): Promise<PaginatedResponseGroupPublic> {
+  async get_public_groups(): Promise<PaginatedResponseGroupPublicWithMetadata> {
     const url = '/groups/public/';
-    const res = await this.intricApiService.get<PaginatedResponseGroupPublic>({ url });
+    const res = await this.intricApiService.get<PaginatedResponseGroupPublicWithMetadata>({ url });
     return res.data;
   }
 

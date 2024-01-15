@@ -4,7 +4,7 @@ import {
   AssistantPublic,
   AssistantUpsertPublic,
   PaginatedResponseAssistantPublic,
-  PaginatedResponseSessionPublic,
+  PaginatedResponseSessionMetadataPublic,
   SessionPublic,
 } from '@/data-contracts/intric/data-contracts';
 import { CreateAssistantDto, UpdateAssistantDto } from '@/dtos/assistant.dto';
@@ -60,7 +60,7 @@ export class AssistantController {
   @Get('/assistants/:id/sessions')
   async get_assistant_sessions(@Param('id') id: string) {
     const url = `/assistants/${id}/sessions/`;
-    const res = await this.intricApiService.get<PaginatedResponseSessionPublic>({ url });
+    const res = await this.intricApiService.get<PaginatedResponseSessionMetadataPublic>({ url });
     return res.data;
   }
 
