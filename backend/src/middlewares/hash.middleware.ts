@@ -4,11 +4,12 @@ import { verifyHash } from '@/services/hash.service';
 
 const hashMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   console.log(req.headers);
-  const user = req.headers['_skuser'] as string;
-  const hash = req.headers['_skhash'] as string;
-  console.log({ user, hash });
+  const user = req.headers['_skuser'] ? (req.headers['_skuser'] as string) : '';
+  const assistant_id = req.headers['_skassistant'] ? (req.headers['_skassistant'] as string) : '';
+  const hash = req.headers['_skhash'] ? (req.headers['_skhash'] as string) : '';
+  console.log({ user, assistant_id, hash });
   try {
-    if (verifyHash(user, hash)) {
+    if (verifyHash(user, assistant_id, hash)) {
       next();
     } else {
       next(new HttpException(401, 'Not Authorized'));
