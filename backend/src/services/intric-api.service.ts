@@ -43,10 +43,12 @@ class IntricApiService {
   }
 
   public async get<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
+    console.log('GET to url', config.url);
     return this.request<T>({ ...config, method: 'GET' });
   }
 
   public async post<T, U>(config: AxiosRequestConfig<U>): Promise<IntricApiResponse<T>> {
+    console.log('POST to url', config.url);
     return this.request<T>({ ...config, method: 'POST' });
   }
 
