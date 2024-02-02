@@ -17,11 +17,10 @@ export const verifyHash = (user: string, assistant_id: string, hash: string) => 
   }
   console.log('inbound hash:', hash);
   const salt = INTRIC_SALT;
-  console.log('using salt:', salt);
   const input = `${user}${assistant_id}${salt}`;
   console.log('Using input:');
   console.log(input);
-  // const _hash = createHmac('sha256', salt).update(input).digest('base64');
+  // const _hash = createHmac('sha256', salt).update(input).digest('base64url');
   const _hash = createHash('sha256').update(input).digest('base64');
   console.log('calculated hash:', _hash);
   return typeof hash !== 'undefined' && typeof _hash !== 'undefined' && _hash === hash;

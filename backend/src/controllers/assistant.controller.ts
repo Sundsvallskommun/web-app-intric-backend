@@ -72,7 +72,7 @@ export class AssistantController {
   }
 
   @Post('/assistants/:assistant_id/sessions')
-  // @UseBefore(hashMiddleware)
+  @UseBefore(hashMiddleware)
   async ask_assistant(
     @Req() req: any,
     @Param('assistant_id') assistant_id: string,
@@ -112,7 +112,7 @@ export class AssistantController {
   }
 
   @Post('/assistants/:assistant_id/sessions/:session_id')
-  // @UseBefore(hashMiddleware)
+  @UseBefore(hashMiddleware)
   async ask_followup(
     @Req() req: any,
     @Param('assistant_id') assistant_id: string,
