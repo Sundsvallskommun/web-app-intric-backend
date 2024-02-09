@@ -22,43 +22,49 @@ import { Stream } from 'stream';
 export class AssistantController {
   private intricApiService = new IntricApiService();
   @Get('/assistants')
+  @UseBefore(hashMiddleware)
   async get_assistants() {
     const url = '/assistants/';
     const res = await this.intricApiService.get<PaginatedResponseAssistantPublic>({ url });
     return res.data;
   }
 
-  @Post('/assistants')
-  @UseBefore(validationMiddleware(CreateAssistantDto, 'body'))
-  async create_assistant(@Body() body: CreateAssistantDto): Promise<AssistantPublic> {
-    const url = `/assistsants/`;
-    const res = await this.intricApiService.post<AssistantPublic, AssistantCreatePublic>({ url, data: body });
-    return res.data;
-  }
+  // @Post('/assistants')
+  // @UseBefore(hashMiddleware)
+  // @UseBefore(validationMiddleware(CreateAssistantDto, 'body'))
+  // async create_assistant(@Body() body: CreateAssistantDto): Promise<AssistantPublic> {
+  //   const url = `/assistants/`;
+  //   const res = await this.intricApiService.post<AssistantPublic, AssistantCreatePublic>({ url, data: body });
+  //   return res.data;
+  // }
 
   @Get('/assistants/:id')
+  @UseBefore(hashMiddleware)
   async get_assistant_by_id(@Param('id') id: string) {
     const url = `/assistants/${id}`;
     const res = await this.intricApiService.get<AssistantPublic>({ url });
     return res.data;
   }
 
-  @Post('/assistants/:id')
-  @UseBefore(validationMiddleware(UpdateAssistantDto, 'body'))
-  async update_assistant(@Req() req: Request, @Param('id') id: string, @Body() body: UpdateAssistantDto): Promise<AssistantPublic> {
-    const url = `/groups/${id}/`;
-    const res = await this.intricApiService.post<AssistantPublic, AssistantUpsertPublic>({ url, data: body });
-    return res.data;
-  }
+  // @Post('/assistants/:id')
+  // @UseBefore(hashMiddleware)
+  // @UseBefore(validationMiddleware(UpdateAssistantDto, 'body'))
+  // async update_assistant(@Req() req: Request, @Param('id') id: string, @Body() body: UpdateAssistantDto): Promise<AssistantPublic> {
+  //   const url = `/groups/${id}/`;
+  //   const res = await this.intricApiService.post<AssistantPublic, AssistantUpsertPublic>({ url, data: body });
+  //   return res.data;
+  // }
 
-  @Delete('/assistants/:id')
-  async delete_assistant(@Param('id') id: string): Promise<AssistantPublic> {
-    const url = `/groups/${id}/`;
-    const res = await this.intricApiService.delete<AssistantPublic>({ url });
-    return res.data;
-  }
+  // @Delete('/assistants/:id')
+  // @UseBefore(hashMiddleware)
+  // async delete_assistant(@Param('id') id: string): Promise<AssistantPublic> {
+  //   const url = `/groups/${id}/`;
+  //   const res = await this.intricApiService.delete<AssistantPublic>({ url });
+  //   return res.data;
+  // }
 
   @Get('/assistants/:id/sessions')
+  @UseBefore(hashMiddleware)
   async get_assistant_sessions(@Param('id') id: string) {
     const url = `/assistants/${id}/sessions/`;
     const res = await this.intricApiService.get<PaginatedResponseSessionMetadataPublic>({ url });
@@ -66,6 +72,7 @@ export class AssistantController {
   }
 
   @Get('/assistants/:id/sessions/:session_id')
+  @UseBefore(hashMiddleware)
   async get_assistant_session(@Param('id') id: string, @Param('session_id') session_id: string) {
     const url = `/assistants/${id}/sessions/${session_id}`;
     const res = await this.intricApiService.get<SessionPublic>({ url });

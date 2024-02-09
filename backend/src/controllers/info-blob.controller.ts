@@ -31,24 +31,24 @@ export class InfoBlobController {
     return res.data;
   }
 
-  @Post('/info-blobs/:id')
-  @OpenAPI({
-    summary: 'Update info blob',
-  })
-  @UseBefore(validationMiddleware(UpdateInfoBlobDto, 'body'))
-  async update_infoblob(@Param('id') id: string, @Body() body: UpdateInfoBlobDto): Promise<InfoBlobPublic> {
-    const url = `/info-blobs/${id}/`;
-    const res = await this.intricApiService.post<InfoBlobPublic, InfoBlobUpdatePublic>({ url, data: body });
-    return res.data;
-  }
+  // @Post('/info-blobs/:id')
+  // @OpenAPI({
+  //   summary: 'Update info blob',
+  // })
+  // @UseBefore(validationMiddleware(UpdateInfoBlobDto, 'body'))
+  // async update_infoblob(@Param('id') id: string, @Body() body: UpdateInfoBlobDto): Promise<InfoBlobPublic> {
+  //   const url = `/info-blobs/${id}/`;
+  //   const res = await this.intricApiService.post<InfoBlobPublic, InfoBlobUpdatePublic>({ url, data: body });
+  //   return res.data;
+  // }
 
-  @Delete('/info-blobs/:id')
-  @OpenAPI({
-    summary: 'Delete info blob',
-  })
-  async delete_infoblob(@Param('id') id: string): Promise<InfoBlobPublic> {
-    const url = `/info-blobs/${id}/`;
-    const res = await this.intricApiService.delete<InfoBlobPublic>({ url });
-    return res.data;
-  }
+  // @Delete('/info-blobs/:id')
+  // @OpenAPI({
+  //   summary: 'Delete info blob',
+  // })
+  // async delete_infoblob(@Param('id') id: string): Promise<InfoBlobPublic> {
+  //   const url = `/info-blobs/${id}/`;
+  //   const res = await this.intricApiService.delete<InfoBlobPublic>({ url });
+  //   return res.data;
+  // }
 }
