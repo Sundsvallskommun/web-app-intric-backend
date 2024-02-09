@@ -1,8 +1,10 @@
 import {
   AskAssistant,
+  AskResponse,
   AssistantCreatePublic,
   AssistantPublic,
   AssistantUpsertPublic,
+  InstorageAiModelsCompletionModelsLlmsModelFamily,
   PaginatedResponseAssistantPublic,
   PaginatedResponseSessionMetadataPublic,
   SessionPublic,
@@ -15,10 +17,8 @@ import IntricApiService from '@/services/intric-api.service';
 import { ServerResponse } from 'http';
 import { Body, Controller, Delete, Get, HttpError, Param, Post, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
 import { Stream } from 'stream';
-
 @Controller()
 export class AssistantController {
-  private apiService = new ApiService();
   private intricApiService = new IntricApiService();
   @Get('/assistants')
   async get_assistants() {
@@ -91,16 +91,10 @@ export class AssistantController {
       question: body.body,
       stream,
     };
-    console.log('Sending data:');
-    console.log(data);
     const res = await this.intricApiService.post<Stream, AskAssistant>({ url, responseType, data });
     const datastream = res.data;
     let i = 0;
     datastream.on('data', (buf: Buffer) => {
-      const jsonstring = buf.toString();
-      console.log(i);
-      i += 1;
-      console.log(buf.toString());
       return buf;
     });
 
@@ -136,9 +130,6 @@ export class AssistantController {
     const datastream = res.data;
     let i = 0;
     datastream.on('data', (buf: Buffer) => {
-      const jsonstring = buf.toString();
-      console.log(i);
-      i += 1;
       console.log(buf.toString());
       return buf;
     });
