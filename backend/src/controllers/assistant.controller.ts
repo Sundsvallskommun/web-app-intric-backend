@@ -9,6 +9,7 @@ import {
   PaginatedResponseSessionMetadataPublic,
   SessionPublic,
 } from '@/data-contracts/intric/data-contracts';
+import { Request } from 'express';
 import { CreateAssistantDto, UpdateAssistantDto } from '@/dtos/assistant.dto';
 import hashMiddleware from '@/middlewares/hash.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
