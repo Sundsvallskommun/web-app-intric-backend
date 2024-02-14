@@ -6,9 +6,10 @@ import { HealthController } from './controllers/health.controller';
 import { AssistantController } from './controllers/assistant.controller';
 import { GroupController } from './controllers/group.controller';
 import { InfoBlobController } from './controllers/info-blob.controller';
+import { QueryController } from './controllers/query.controller';
 
 validateEnv();
 
-const app = new App([IndexController, UserController, HealthController, AssistantController, GroupController, InfoBlobController]);
+const app = new App([IndexController, UserController, HealthController, AssistantController, GroupController, InfoBlobController, QueryController]);
 
 app.listen();

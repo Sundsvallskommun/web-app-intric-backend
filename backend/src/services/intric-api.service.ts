@@ -14,10 +14,10 @@ class IntricApiService {
   private apiTokenService = new ApiTokenService();
   private intricApiTokenService = new IntricApiTokenService();
   private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
-    const token = await this.intricApiTokenService.getToken();
+    // const token = await this.intricApiTokenService.getToken();
 
     const defaultHeaders = {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
     const defaultParams = {};
@@ -44,6 +44,7 @@ class IntricApiService {
 
   public async get<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     console.log('GET to url', config.url);
+    console.log('with headers:', JSON.stringify(config.headers));
     return this.request<T>({ ...config, method: 'GET' });
   }
 

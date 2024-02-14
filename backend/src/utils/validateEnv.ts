@@ -13,6 +13,8 @@ const validateEnv = () => {
     INTRIC_USERNAME: str(),
     INTRIC_PASSWORD: str(),
     INTRIC_SALT: str(),
+    INTRIC_APIKEY_VUX: str(),
+    APPLICATION_MODE: str(),
     PORT: port(),
     BASE_URL_PREFIX: str(),
     SAML_CALLBACK_URL: url(),
