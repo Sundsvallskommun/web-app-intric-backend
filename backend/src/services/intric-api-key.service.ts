@@ -10,10 +10,10 @@ export const getApiKey = (req: Request) => {
   console.log('inbound app:', app);
   switch (app) {
     case 'VUX':
-      console.log('Returning api key for VUX:', INTRIC_APIKEY_VUX);
+      console.log('Returning api key for VUX');
       return INTRIC_APIKEY_VUX;
     case 'QWERTY':
-      console.log('Qwerty but still returning api key for VUX:', INTRIC_APIKEY_VUX);
+      console.log('Qwerty but still returning api key for VUX');
       return INTRIC_APIKEY_VUX;
     default:
       return undefined;
