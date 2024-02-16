@@ -71,7 +71,6 @@ export class QueryController {
     const datastream = res.data;
     let i = 0;
     datastream.on('data', (buf: Buffer) => {
-      console.log(buf.toString());
       return buf;
     });
 
