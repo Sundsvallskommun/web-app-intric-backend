@@ -1,25 +1,25 @@
 import { INTRIC_SALT } from '@/config';
+import { logger } from '@/utils/logger';
 import 'crypto';
 import { createHash, createHmac } from 'crypto';
 
 export const verifyHash = (user: string, assistant_id: string, app: string, hash: string) => {
   if (typeof user !== 'string') {
-    console.log('User value missing');
+    logger.error('User value missing');
     return false;
   }
   if (typeof assistant_id !== 'string') {
-    console.log('Assistant id value missing');
+    logger.error('Assistant id value missing');
     return false;
   }
   if (typeof app !== 'string') {
-    console.log('Application id missing');
+    logger.error('Application id missing');
     return false;
   }
   if (typeof hash !== 'string') {
-    console.log('Hash value missing');
+    logger.error('Hash value missing');
     return false;
   }
-  console.log('inbound hash:', hash);
   const salt = INTRIC_SALT;
   const input = `${user}${assistant_id}${app}${salt}`;
   console.log('Using input:');

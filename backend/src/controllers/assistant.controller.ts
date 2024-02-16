@@ -24,7 +24,6 @@ export class AssistantController {
   async get_assistants(@Req() req) {
     const url = '/assistants/';
     const apiKey = getApiKey(req);
-    console.log('apikey:', apiKey);
     const res = await this.intricApiService.get<PaginatedResponseAssistantPublic>({ url, headers: { 'api-key': apiKey } });
     return res.data;
   }
