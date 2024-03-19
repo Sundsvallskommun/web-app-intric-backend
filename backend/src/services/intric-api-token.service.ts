@@ -1,6 +1,6 @@
 import qs from 'qs';
 import axios from 'axios';
-import { CLIENT_KEY, CLIENT_SECRET, INTRIC_USERNAME, INTRIC_PASSWORD, INTRIC_API_BASE_URL, INTRIC_API_BASE_PATH } from '@config';
+import { CLIENT_KEY, CLIENT_SECRET, INTRIC_API_BASE_URL, INTRIC_API_BASE_PATH } from '@config';
 import { HttpException } from '@/exceptions/HttpException';
 import { logger } from '@utils/logger';
 
@@ -60,8 +60,8 @@ class IntricApiTokenService {
         },
         data: qs.stringify({
           grant_type: '',
-          username: INTRIC_USERNAME,
-          password: INTRIC_PASSWORD,
+          // username: INTRIC_USERNAME,
+          // password: INTRIC_PASSWORD,
           scope: '',
           client_id: '',
           client_secret: '',
