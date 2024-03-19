@@ -13,10 +13,10 @@ class ApiService {
   private apiTokenService = new ApiTokenService();
   private intricApiTokenService = new IntricApiTokenService();
   private async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const token = await this.intricApiTokenService.getToken();
+    // const token = await this.intricApiTokenService.getToken();
 
     const defaultHeaders = {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
     const defaultParams = {};
