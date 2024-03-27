@@ -45,6 +45,9 @@ import { Profile } from './interfaces/profile.interface';
 import ApiService from '@/services/api.service';
 import { HttpException } from './exceptions/HttpException';
 import { join } from 'path';
+import cors from 'cors';
+
+const corsWhitelist = ORIGIN.split(',');
 
 const SessionStoreCreate = SESSION_MEMORY ? createMemoryStore(session) : createFileStore(session);
 const sessionTTL = 4 * 24 * 60 * 60;
@@ -185,6 +188,23 @@ class App {
     this.app.use(passport.session());
     passport.use('saml', samlStrategy);
 
+    this.app.use(
+      cors({
+        credentials: CREDENTIALS,
+        origin: function (origin, callback) {
+          if (origin === undefined || corsWhitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+          } else {
+            if (NODE_ENV == 'development') {
+              callback(null, true);
+            } else {
+              callback(new Error('Not allowed by CORS'));
+            }
+          }
+        },
+      }),
+    );
+
     this.app.get(
       `${BASE_URL_PREFIX}/saml/login`,
       (req, res, next) => {
@@ -246,11 +266,6 @@ class App {
   private initializeRoutes(controllers: Function[]) {
     useExpressServer(this.app, {
       routePrefix: BASE_URL_PREFIX,
-      cors: {
-        origin: ORIGIN,
-        credentials: CREDENTIALS,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      },
       controllers: controllers,
       defaultErrorHandler: false,
     });
