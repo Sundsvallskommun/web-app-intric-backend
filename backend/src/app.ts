@@ -192,6 +192,7 @@ class App {
       cors({
         credentials: CREDENTIALS,
         origin: function (origin, callback) {
+          logger.info(`Called from origin: ${origin}`);
           if (origin === undefined || corsWhitelist.indexOf(origin) !== -1) {
             callback(null, true);
           } else {
