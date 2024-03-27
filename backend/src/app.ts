@@ -192,7 +192,7 @@ class App {
       cors({
         credentials: CREDENTIALS,
         origin: function (origin, callback) {
-          if (origin === undefined || corsWhitelist.indexOf(origin) !== -1) {
+          if (origin === undefined || corsWhitelist.indexOf(origin) !== -1 || corsWhitelist.indexOf('*') !== -1) {
             callback(null, true);
           } else {
             if (NODE_ENV == 'development') {
