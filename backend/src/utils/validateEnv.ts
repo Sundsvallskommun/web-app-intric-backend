@@ -1,4 +1,4 @@
-import { cleanEnv, port, str, url,  } from 'envalid';
+import { cleanEnv, num, port, str, url } from 'envalid';
 
 // NOTE: Make sure we got these in ENV
 const validateEnv = () => {
@@ -15,7 +15,11 @@ const validateEnv = () => {
     INTRIC_SALT: str(),
     INTRIC_APIKEY_VUX: str(),
     INTRIC_APIKEY_SERVANET: str(),
-    APPLICATION_MODE: str(),
+    APPLICATION_MODE: str({ choices: ['INTERNAL', 'EXTERNAL'] }),
+    RATE_LIMIT_WINDOW: num(),
+    RATE_LIMIT_MAX: num(),
+    SPIKE_LIMIT_WINDOW: num(),
+    SPIKE_LIMIT_MAX: num(),
     PORT: port(),
     BASE_URL_PREFIX: str(),
     SAML_CALLBACK_URL: url(),

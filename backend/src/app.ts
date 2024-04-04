@@ -39,6 +39,7 @@ import {
   SESSION_MEMORY,
 } from '@config';
 import errorMiddleware from '@middlewares/error.middleware';
+import rateLimiter from '@middlewares/rate-limiter.middleware';
 import { logger, stream } from '@utils/logger';
 import { PrismaClient } from '@prisma/client';
 import { Profile } from './interfaces/profile.interface';
@@ -174,6 +175,8 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    this.app.use(rateLimiter.standardLimiter);
+    this.app.use(rateLimiter.spikeLimiter);
 
     this.app.use(
       session({
