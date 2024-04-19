@@ -1,4 +1,6 @@
-import { AskAssistant } from '@/data-contracts/intric/data-contracts';
+import { AskAssistant, SessionPublic } from '@/data-contracts/intric/data-contracts';
+import { HttpException } from '@/exceptions/HttpException';
+import { Feedback } from '@/interfaces/feedback';
 import hashMiddleware from '@/middlewares/hash.middleware';
 import { getApiKey } from '@/services/intric-api-key.service';
 import IntricApiService from '@/services/intric-api.service';
@@ -20,8 +22,9 @@ export class QueryController {
     @Res() response: ServerResponse,
   ): Promise<any> {
     if (!body?.body || body?.body === '') {
-      throw new HttpError(400, 'Empty body');
+      throw new HttpException(400, 'Empty body');
     }
+    // throw new HttpException(500, 'Mock error');
     const query = body?.body;
     console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/`;
@@ -78,6 +81,26 @@ export class QueryController {
       console.log('stream done');
       return response.end();
     });
+    return res.data;
+  }
+
+  @Post('/assistants/:assistant_id/sessions/:session_id/feedback')
+  @UseBefore(hashMiddleware)
+  async give_feedback(
+    @Req() req,
+    @Param('assistant_id') assistant_id: string,
+    @Param('session_id') session_id: string,
+    @Body() body: Feedback,
+  ): Promise<any> {
+    console.log('Feedback body: ', body);
+    if (!body || !body?.value) {
+      throw new HttpError(400, 'Empty body');
+    }
+    const url = `/assistants/${assistant_id}/sessions/${session_id}/feedback/`;
+    const apiKey = getApiKey(req);
+    console.log('posting body: ', body);
+    const res = await this.intricApiService.post<SessionPublic, Feedback>({ url, headers: { 'api-key': apiKey }, data: body });
+    console.log('Feedback response: ', res.data);
     return res.data;
   }
 }
