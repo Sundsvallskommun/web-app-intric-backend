@@ -24,7 +24,6 @@ export class QueryController {
     if (!body?.body || body?.body === '') {
       throw new HttpException(400, 'Empty body');
     }
-    // throw new HttpException(500, 'Mock error');
     const query = body?.body;
     console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/`;
