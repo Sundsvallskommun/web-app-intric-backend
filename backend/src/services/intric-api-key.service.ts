@@ -1,4 +1,4 @@
-import { INTRIC_APIKEY_SERVANET, INTRIC_APIKEY_VUX } from '@/config';
+import { INTRIC_APIKEY_SERVANET, INTRIC_APIKEY_VUX, INTRIC_APIKEY_PRATOMAT1, INTRIC_APIKEY_PRATOMAT2 } from '@/config';
 import { Request } from 'express';
 
 export const getApiKey = (req: Request) => {
@@ -9,6 +9,12 @@ export const getApiKey = (req: Request) => {
   }
   console.log('inbound app:', app);
   switch (app) {
+    case 'PRATOMAT1':
+      console.log('Returning api key for PRATOMAT1');
+      return INTRIC_APIKEY_PRATOMAT1;
+    case 'PRATOMAT2':
+      console.log('Returning api key for PRATOMAT2');
+      return INTRIC_APIKEY_PRATOMAT2;
     case 'VUX':
       console.log('Returning api key for VUX');
       return INTRIC_APIKEY_VUX;
