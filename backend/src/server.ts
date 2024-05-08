@@ -7,9 +7,19 @@ import { AssistantController } from './controllers/assistant.controller';
 import { GroupController } from './controllers/group.controller';
 import { InfoBlobController } from './controllers/info-blob.controller';
 import { QueryController } from './controllers/query.controller';
+import { AzureControlller } from './controllers/azure.controller';
 
 validateEnv();
 
-const app = new App([IndexController, UserController, HealthController, AssistantController, GroupController, InfoBlobController, QueryController]);
+const app = new App([
+  AzureControlller,
+  IndexController,
+  UserController,
+  HealthController,
+  AssistantController,
+  GroupController,
+  InfoBlobController,
+  QueryController,
+]);
 
 app.listen();
