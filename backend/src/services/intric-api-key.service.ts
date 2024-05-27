@@ -1,4 +1,11 @@
-import { INTRIC_APIKEY_SERVANET, INTRIC_APIKEY_VUX, INTRIC_APIKEY_PRATOMAT1, INTRIC_APIKEY_PRATOMAT2, INTRIC_APIKEY_PRATOMAT3 } from '@/config';
+import {
+  INTRIC_APIKEY_SERVANET,
+  INTRIC_APIKEY_VUX,
+  INTRIC_APIKEY_PRATOMAT1,
+  INTRIC_APIKEY_PRATOMAT2,
+  INTRIC_APIKEY_PRATOMAT3,
+  INTRIC_APIKEY_QWERTY,
+} from '@/config';
 import { Request } from 'express';
 
 export const getApiKey = (req: Request) => {
@@ -26,7 +33,7 @@ export const getApiKey = (req: Request) => {
       return INTRIC_APIKEY_SERVANET;
     case 'QWERTY':
       console.log('Qwerty but still returning api key for VUX');
-      return INTRIC_APIKEY_VUX;
+      return INTRIC_APIKEY_QWERTY;
     default:
       return undefined;
   }

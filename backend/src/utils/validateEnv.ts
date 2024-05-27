@@ -15,6 +15,7 @@ const validateEnv = () => {
     INTRIC_SALT: str(),
     INTRIC_APIKEY_VUX: str(),
     INTRIC_APIKEY_SERVANET: str(),
+    INTRIC_APIKEY_QWERTY: str(),
     APPLICATION_MODE: str({ choices: ['INTERNAL', 'EXTERNAL'] }),
     RATE_LIMIT_WINDOW: num(),
     RATE_LIMIT_MAX: num(),
