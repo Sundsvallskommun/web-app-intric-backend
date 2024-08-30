@@ -5,6 +5,8 @@ import {
   INTRIC_APIKEY_PRATOMAT2,
   INTRIC_APIKEY_PRATOMAT3,
   INTRIC_APIKEY_PRATOMAT4,
+  INTRIC_APIKEY_PRATOMAT5,
+  INTRIC_APIKEY_PRATOMAT6,
   INTRIC_APIKEY_QWERTY,
   INTRIC_APIKEY_WISSER,
 } from '@/config';
@@ -30,6 +32,12 @@ export const getApiKey = (req: Request) => {
     case 'PRATOMAT4':
       console.log('Returning api key for PRATOMAT4');
       return INTRIC_APIKEY_PRATOMAT4;
+    case 'PRATOMAT5':
+      console.log('Returning api key for PRATOMAT5');
+      return INTRIC_APIKEY_PRATOMAT5;
+    case 'PRATOMAT6':
+      console.log('Returning api key for PRATOMAT6');
+      return INTRIC_APIKEY_PRATOMAT6;
     case 'VUX':
       console.log('Returning api key for VUX');
       return INTRIC_APIKEY_VUX;
