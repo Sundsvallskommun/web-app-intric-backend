@@ -1,4 +1,4 @@
-import { AZURE_REGION, AZURE_SUBSCRIPTION_KEY } from '@/config';
+import { AZURE_REGION, AZURE_SUBSCRIPTION_KEY, AZURE_TRANSLATOR_KEY } from '@/config';
 import axios from 'axios';
 import { HttpError } from 'routing-controllers';
 
@@ -22,5 +22,47 @@ export const getToken = async () => {
     }
   } catch (e) {
     throw new HttpError(501, 'Error getting Azure Token');
+  }
+};
+
+interface GetTranslationOptions {
+  text: string[];
+  sourcelanguage: string;
+  targetlanguage: string;
+}
+
+interface Translation {
+  text: string;
+  to: string;
+}
+
+interface TranslationData {
+  translations: Translation[];
+}
+
+type TranslationResponse = TranslationData[];
+
+export const getTranslations: (options: GetTranslationOptions) => Promise<string[]> = async ({ text, sourcelanguage, targetlanguage }) => {
+  const url = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
+
+  const headers = {
+    'Ocp-Apim-Subscription-Key': AZURE_TRANSLATOR_KEY,
+    'Ocp-Apim-Subscription-Region': AZURE_REGION,
+    'Content-Type': 'application/json',
+  };
+  try {
+    const res = await axios<TranslationResponse>({
+      url: `${url}&from=${sourcelanguage}&to=${targetlanguage}`,
+      headers,
+      data: JSON.stringify(text.map(text => ({ Text: text }))),
+      method: 'POST',
+    });
+    const data = res?.data?.map(data => data?.translations.map(translation => translation.text)).flat();
+
+    if (data) {
+      return Promise.resolve(data);
+    }
+  } catch (e) {
+    Promise.reject(e);
   }
 };
