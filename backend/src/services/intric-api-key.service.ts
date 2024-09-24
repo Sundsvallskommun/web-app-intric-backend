@@ -11,6 +11,7 @@ import {
   INTRIC_APIKEY_PRATOMAT8,
   INTRIC_APIKEY_QWERTY,
   INTRIC_APIKEY_WISSER,
+  INTRIC_APIKEY_TRAINEE,
 } from '@/config';
 import { Request } from 'express';
 
@@ -58,6 +59,9 @@ export const getApiKey = (req: Request) => {
     case 'WISSER':
       console.log('Returning api key for WISSER');
       return INTRIC_APIKEY_WISSER;
+    case 'TRAINEE':
+      console.log('Returning api key for TRAINEE');
+      return INTRIC_APIKEY_TRAINEE;
     default:
       return undefined;
   }
