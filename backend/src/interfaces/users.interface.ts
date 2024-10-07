@@ -1,7 +1,13 @@
 export interface User {
-  id: number;
   name: string;
-  guid: string;
-  email: string;
-  password: string;
+  username: string;
+  userId?: string;
+  isAdmin?: boolean;
+  apiKey?: string;
+}
+
+export interface UserSettings {
+  id: number;
+  userId: string;
+  apiKey?: string;
 }
