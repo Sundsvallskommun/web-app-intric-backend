@@ -10,15 +10,11 @@ class IntricApiResponse<T> {
   message: string;
 }
 
-type IntricApiConfig<D = any> = Omit<AxiosRequestConfig<D>, 'headers'> & {
-  url:string,
-  headers?: Partial<AxiosRequestHeaders>
-}
 
 class IntricApiService {
   // private apiTokenService = new ApiTokenService();
   // private intricApiTokenService = new IntricApiTokenService();
-  private async request<T>(config: IntricApiConfig): Promise<IntricApiResponse<T>> {
+  private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     // const token = await this.intricApiTokenService.getToken();
 
     const defaultHeaders = {
@@ -27,11 +23,9 @@ class IntricApiService {
     };
     const defaultParams = {};
 
-    const headers = { ...defaultHeaders, ...config.headers } as AxiosRequestHeaders
-
     const preparedConfig: AxiosRequestConfig = {
       ...config,
-      headers,
+      headers: { ...defaultHeaders, ...config.headers },
       params: { ...defaultParams, ...config.params },
       url: intricApiURL(config.url),
     };
@@ -51,26 +45,26 @@ class IntricApiService {
     }
   }
 
-  public async get<T>(config: IntricApiConfig): Promise<IntricApiResponse<T>> {
+  public async get<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     console.log('GET to url', config.url);
     console.log('with headers:', JSON.stringify(config.headers));
     return this.request<T>({ ...config, method: 'GET' });
   }
 
-  public async post<T, U>(config: IntricApiConfig<U>): Promise<IntricApiResponse<T>> {
+  public async post<T, U>(config: AxiosRequestConfig<U>): Promise<IntricApiResponse<T>> {
     console.log('POST to url', config.url);
     return this.request<T>({ ...config, method: 'POST' });
   }
 
-  public async patch<T, U>(config: IntricApiConfig<U>): Promise<IntricApiResponse<T>> {
+  public async patch<T, U>(config: AxiosRequestConfig<U>): Promise<IntricApiResponse<T>> {
     return this.request<T>({ ...config, method: 'PATCH' });
   }
 
-  public async put<T, U>(config: IntricApiConfig<U>): Promise<IntricApiResponse<T>> {
+  public async put<T, U>(config: AxiosRequestConfig<U>): Promise<IntricApiResponse<T>> {
     return this.request<T>({ ...config, method: 'PUT' });
   }
 
-  public async delete<T>(config: IntricApiConfig): Promise<IntricApiResponse<T>> {
+  public async delete<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     return this.request<T>({ ...config, method: 'DELETE' });
   }
 }
