@@ -27,7 +27,7 @@ export class QueryController {
     const query = body?.body;
     console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/`;
-    const apiKey = getApiKey(req);
+    const apiKey = await getApiKey(req);
     const responseType = 'stream';
     const data: AskAssistant = {
       question: body.body,
@@ -63,7 +63,7 @@ export class QueryController {
     const query = body?.body;
     console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/${session_id}/`;
-    const apiKey = getApiKey(req);
+    const apiKey = await getApiKey(req);
     const responseType = 'stream';
     const data: AskAssistant = {
       question: body.body,
@@ -96,7 +96,7 @@ export class QueryController {
       throw new HttpError(400, 'Empty body');
     }
     const url = `/assistants/${assistant_id}/sessions/${session_id}/feedback/`;
-    const apiKey = getApiKey(req);
+    const apiKey = await getApiKey(req);
     console.log('posting body: ', body);
     const res = await this.intricApiService.post<SessionPublic, Feedback>({ url, headers: { 'api-key': apiKey }, data: body });
     console.log('Feedback response: ', res.data);
