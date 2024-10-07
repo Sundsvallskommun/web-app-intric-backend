@@ -24,7 +24,6 @@ import { OpenAPI } from 'routing-controllers-openapi';
 @UseBefore(applicationModeMiddleware)
 @Controller()
 export class GroupController {
-  private apiService = new ApiService();
   private intricApiService = new IntricApiService();
 
   @Get('/groups')
