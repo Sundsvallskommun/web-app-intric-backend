@@ -14,7 +14,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 import { Strategy, VerifiedCallback } from 'passport-saml';
 import bodyParser from 'body-parser';
-import { useExpressServer, getMetadataArgsStorage } from 'routing-controllers';
+import { useExpressServer, getMetadataArgsStorage, Redirect } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import swaggerUi from 'swagger-ui-express';
 import {
@@ -37,6 +37,7 @@ import {
   SWAGGER_ENABLED,
 } from '@config';
 import errorMiddleware from '@middlewares/error.middleware';
+import rateLimiter from '@middlewares/rate-limiter.middleware';
 import { logger, stream } from '@utils/logger';
 import { Profile } from './interfaces/profile.interface';
 import { HttpException } from './exceptions/HttpException';
@@ -45,13 +46,15 @@ import { isValidUrl } from './utils/util';
 import { additionalConverters } from './utils/custom-validation-classes';
 import { User } from './interfaces/users.interface';
 import ApiService from './services/api.service';
+import cors from 'cors';
+
+const corsWhitelist = ORIGIN.split(',');
 
 const SessionStoreCreate = SESSION_MEMORY ? createMemoryStore(session) : createFileStore(session);
 const sessionTTL = 4 * 24 * 60 * 60;
 // NOTE: memory uses ms while file uses seconds
 const sessionStore = new SessionStoreCreate(SESSION_MEMORY ? { checkPeriod: sessionTTL * 1000 } : { sessionTTL, path: './data/sessions' });
 
-// const prisma = new PrismaClient();
 const apiService = new ApiService();
 
 passport.serializeUser(function (user, done) {
@@ -83,14 +86,14 @@ const samlStrategy = new Strategy(
         message: 'Missing SAML profile',
       });
     }
+
     const {
       givenName,
       surname,
       username,
       citizenIdentifier,
-      attributes: {groups},
+      attributes: { groups },
     } = profile;
-   
 
     if (!givenName || !surname || !groups || !citizenIdentifier) {
       return done({
@@ -99,18 +102,22 @@ const samlStrategy = new Strategy(
       });
     }
 
+    const isAdmin = groups?.includes('SG_AI-WebAppInterfaceAdmin');
+
+    if (!isAdmin) {
+      return done({
+        name: 'MISSING_PERMISSIONS',
+        message: 'Missing permissions',
+      });
+    }
 
     try {
-    
-
       const findUser: User = {
         userId: citizenIdentifier,
         username: username,
         name: `${givenName} ${surname}`,
-        isAdmin: groups?.includes('SG_AI-WebAppInterfaceAdmin'),
+        isAdmin: isAdmin,
       };
-
-  
 
       done(null, { ...findUser });
     } catch (err) {
@@ -177,11 +184,32 @@ class App {
 
     this.app.use(passport.initialize());
     this.app.use(passport.session());
+    this.app.use(rateLimiter.standardLimiter);
+    this.app.use(rateLimiter.spikeLimiter);
+
     passport.use('saml', samlStrategy);
+
+    this.app.use(
+      cors({
+        credentials: CREDENTIALS,
+        origin: function (origin, callback) {
+          if (origin === undefined || corsWhitelist.indexOf(origin) !== -1 || corsWhitelist.indexOf('*') !== -1) {
+            callback(null, true);
+          } else {
+            if (NODE_ENV == 'development') {
+              callback(null, true);
+            } else {
+              callback(new Error('Not allowed by CORS'));
+            }
+          }
+        },
+      }),
+    );
 
     this.app.get(
       `${BASE_URL_PREFIX}/saml/login`,
       (req, res, next) => {
+      
         if (req.session.returnTo) {
           req.query.RelayState = req.session.returnTo;
         } else if (req.query.successRedirect) {
@@ -249,24 +277,27 @@ class App {
       });
     });
 
-    this.app.post(`${BASE_URL_PREFIX}/saml/login/callback`, bodyParser.urlencoded({ extended: false }), (req, res, next) => {
+    this.app.post(`${BASE_URL_PREFIX}/saml/login/callback`, bodyParser.urlencoded({ extended: false }), ( req, res, next) => {
       let successRedirect, failureRedirect;
+
       if (isValidUrl(req.body.RelayState)) {
         successRedirect = req.body.RelayState;
       }
 
-      if (req.session.messages?.length > 0) {
-        failureRedirect = successRedirect + `?failMessage=${req.session.messages[0]}`;
-      } else {
-        failureRedirect = successRedirect + `?failMessage='SAML_UNKNOWN_ERROR'`;
-      }
 
-      passport.authenticate('saml', {
-        successReturnToOrRedirect: successRedirect,
-        failureRedirect: failureRedirect,
-        failureMessage: true,
-      })(req, res, next);
+      passport.authenticate('saml', ((err, user) => {
+        if(err) {
+          failureRedirect = successRedirect + `?failMessage=${err.name}`;
+          res.redirect(failureRedirect)
+        } else if (!user) {
+          res.redirect('/saml/login')
+        } else {
+          res.redirect(successRedirect)
+        }
+
+      }))(req, res, next);
     });
+  
   }
 
   private initializeRoutes(controllers: Function[]) {
