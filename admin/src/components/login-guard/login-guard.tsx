@@ -12,7 +12,10 @@ export const LoginGuard: React.FC<{ children?: React.ReactNode }> = ({ children 
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    console.log(user);
+    if (user.name && !user.isAdmin) {
+      reset();
+      router.push('/login?failMessage=MISSING_PERMISSIONS');
+    }
   }, [user]);
 
   useEffect(() => {
@@ -25,9 +28,6 @@ export const LoginGuard: React.FC<{ children?: React.ReactNode }> = ({ children 
     return <LoaderFullScreen />;
   }
 
-  // if (user.name && !user.isAdmin && !router.pathname.includes('/login')) {
-  //   router.push('/logout');
-  // }
   // Routes by permissions
   // if (
   //   (router.pathname == '/route-by-permission' && !user.permissions.canEditSystemMessages)

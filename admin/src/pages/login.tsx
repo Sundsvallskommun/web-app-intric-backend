@@ -8,13 +8,14 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { apiURL } from '@utils/api-url';
 import { capitalize } from 'underscore.string';
+import { useUserStore } from '@services/user-service/user-service';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function Start() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
   const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
-
   const params = new URLSearchParams(window.location.search);
   const isLoggedOut = params.get('loggedout') === '';
   const failMessage = params.get('failMessage');
@@ -30,11 +31,10 @@ export default function Start() {
 
   const onLogin = () => {
     // NOTE: send user to login with SSO
-    const path = new URLSearchParams(window.location.search).get('path') || router.query.path || '';
     router.push({
       pathname: apiURL('/saml/login'),
       query: {
-        successRedirect: `${appURL()}${path}`,
+        successRedirect: `${appURL()}/login`,
       },
     });
   };
