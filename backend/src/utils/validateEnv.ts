@@ -23,6 +23,7 @@ const validateEnv = () => {
     INTRIC_APIKEY_PRATOMAT6: str(),
     INTRIC_APIKEY_PRATOMAT7: str(),
     INTRIC_APIKEY_PRATOMAT8: str(),
+    INTRIC_APIKEY_PRATOMAT9: str(),
     APPLICATION_MODE: str({ choices: ['INTERNAL', 'EXTERNAL'] }),
     RATE_LIMIT_WINDOW: num(),
     RATE_LIMIT_MAX: num(),
