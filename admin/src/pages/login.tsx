@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import { Button, FormErrorMessage } from '@sk-web-gui/react';
-import EmptyLayout from '@layouts/empty-layout/empty-layout.component';
 import LoaderFullScreen from '@components/loader/loader-fullscreen';
+import EmptyLayout from '@layouts/empty-layout/empty-layout.component';
+import { Button, FormErrorMessage } from '@sk-web-gui/react';
+import { apiURL } from '@utils/api-url';
 import { appURL } from '@utils/app-url';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { apiURL } from '@utils/api-url';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
 import { capitalize } from 'underscore.string';
 
 export default function Start() {
@@ -18,7 +18,7 @@ export default function Start() {
   const isLoggedOut = params.get('loggedout') === '';
   const failMessage = params.get('failMessage');
   // Turn on/off automatic login
-  const autoLogin = true;
+  const autoLogin = false;
 
   const initalFocus = useRef(null);
   const setInitalFocus = () => {
@@ -28,11 +28,14 @@ export default function Start() {
   };
 
   const onLogin = () => {
+    const path = router.query.path || new URLSearchParams(window.location.search).get('path') || '';
+
     // NOTE: send user to login with SSO
     router.push({
       pathname: apiURL('/saml/login'),
       query: {
-        successRedirect: `${appURL()}/login`,
+        successRedirect: `${appURL(path as string)}`,
+        failureRedirect: `${appURL()}/login?test="kossa"`,
       },
     });
   };
