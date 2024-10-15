@@ -55,8 +55,6 @@ const sessionTTL = 4 * 24 * 60 * 60;
 // NOTE: memory uses ms while file uses seconds
 const sessionStore = new SessionStoreCreate(SESSION_MEMORY ? { checkPeriod: sessionTTL * 1000 } : { sessionTTL, path: './data/sessions' });
 
-const apiService = new ApiService();
-
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
@@ -88,21 +86,21 @@ const samlStrategy = new Strategy(
     }
 
     const {
-      givenName,
+      givenname,
       surname,
       username,
       citizenIdentifier,
       attributes: { groups },
     } = profile;
 
-    if (!givenName || !surname || !groups || !citizenIdentifier) {
+    if (!givenname || !surname || !groups || !citizenIdentifier) {
       return done({
         name: 'SAML_MISSING_ATTRIBUTES',
         message: 'Missing profile attributes',
       });
     }
 
-    const isAdmin = groups?.includes('SG_AI-WebAppInterfaceAdmin');
+    const isAdmin = groups?.toLowerCase()?.includes('sg_ai-webappinterfaceadmin');
 
     if (!isAdmin) {
       return done({
@@ -115,7 +113,7 @@ const samlStrategy = new Strategy(
       const findUser: User = {
         userId: citizenIdentifier,
         username: username,
-        name: `${givenName} ${surname}`,
+        name: `${givenname} ${surname}`,
         isAdmin: isAdmin,
       };
 
