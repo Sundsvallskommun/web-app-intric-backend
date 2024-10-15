@@ -184,6 +184,7 @@ class App {
     this.app.use(passport.session());
     this.app.use(rateLimiter.standardLimiter);
     this.app.use(rateLimiter.spikeLimiter);
+    this.app.set('trust proxy', 1);
 
     passport.use('saml', samlStrategy);
 
@@ -290,12 +291,14 @@ class App {
     this.app.post(`${BASE_URL_PREFIX}/saml/login/callback`, bodyParser.urlencoded({ extended: false }), (req, res, next) => {
       let successRedirect: URL, failureRedirect: URL;
 
-      let urls = req?.body?.RelayState.split(',');
+      let urls = req?.body?.RelayState?.split(',') || ['/'];
 
-      if (isValidUrl(urls[0])) {
+      if (isValidUrl(urls?.[0])) {
         successRedirect = new URL(urls[0]);
+      } else {
+        successRedirect = new URL('/');
       }
-      if (isValidUrl(urls[1])) {
+      if (isValidUrl(urls?.[1])) {
         failureRedirect = new URL(urls[1]);
       } else {
         failureRedirect = successRedirect;
