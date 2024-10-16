@@ -14,14 +14,23 @@ import {
   INTRIC_APIKEY_WISSER,
 } from '@/config';
 import { Request } from 'express';
+import prisma from '../utils/prisma';
 
-export const getApiKey = (req: Request) => {
+export const getApiKey = async (req: Request) => {
   const app = req.headers['_skapp'] ? (req.headers['_skapp'] as string) : undefined;
   if (typeof app !== 'string') {
     console.log('Application id missing');
     return false;
   }
   console.log('inbound app:', app);
+
+  try {
+    const assistant = await prisma.assistant.findUnique({ where: { app } });
+    return assistant.apiKey;
+  } catch (err) {
+    console.log('Not in database, looking in .env');
+  }
+
   switch (app) {
     case 'PRATOMAT1':
       console.log('Returning api key for PRATOMAT1');

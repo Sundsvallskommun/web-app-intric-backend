@@ -10,9 +10,10 @@ class IntricApiResponse<T> {
   message: string;
 }
 
+
 class IntricApiService {
-  private apiTokenService = new ApiTokenService();
-  private intricApiTokenService = new IntricApiTokenService();
+  // private apiTokenService = new ApiTokenService();
+  // private intricApiTokenService = new IntricApiTokenService();
   private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     // const token = await this.intricApiTokenService.getToken();
 
@@ -28,6 +29,7 @@ class IntricApiService {
       params: { ...defaultParams, ...config.params },
       url: intricApiURL(config.url),
     };
+
     try {
       const res = await axios<T>(preparedConfig);
       return { data: res.data, message: 'success' };
@@ -36,9 +38,10 @@ class IntricApiService {
         throw new HttpException(404, 'Not found');
       }
       // NOTE: did you subscribe to the API called?
-      console.log(error);
+      const response = (error as AxiosError).response;
+      console.log("RESPONSE: ", response);
       logger.error('Error:', (error as AxiosError).message);
-      throw new HttpException(500, 'Internal server error from gateway');
+      throw new HttpException(response.status, `Intric: ${(response.data as any)?.message}`);
     }
   }
 
