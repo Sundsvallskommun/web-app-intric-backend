@@ -1,0 +1,11 @@
+{
+  "name_zero": "användarinställningar",
+  "name_one": "användarinställning",
+  "name_many": "användarinställningar",
+  "name_other": "användarinställningar",
+  "new-apiKey": "byt nyckel",
+  "properties": {
+    "name": "Namn",
+    "apiKey": "Personlig api-nyckel till Intric"
+  }
+}
