@@ -56,6 +56,7 @@ export const getTranslations: (options: GetTranslationOptions) => Promise<string
     'Content-Type': 'application/json',
   };
   try {
+    logger.info('Translating text');
     const res = await axios<TranslationResponse>({
       url: `${url}&from=${sourcelanguage}&to=${targetlanguage}`,
       headers,
@@ -65,9 +66,12 @@ export const getTranslations: (options: GetTranslationOptions) => Promise<string
     const data = res?.data?.map(data => data?.translations.map(translation => translation.text)).flat();
 
     if (data) {
+      logger.info('Text translated');
       return Promise.resolve(data);
     }
+    logger.error('Translation failed - no data');
   } catch (e) {
+    logger.error('Error translating text');
     Promise.reject(e);
   }
 };
