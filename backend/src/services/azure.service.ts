@@ -1,9 +1,11 @@
 import { AZURE_REGION, AZURE_SUBSCRIPTION_KEY, AZURE_TRANSLATOR_KEY } from '@/config';
+import { logger } from '@/utils/logger';
 import axios from 'axios';
 import { HttpError } from 'routing-controllers';
 
 export const getToken = async () => {
   if (!AZURE_REGION || !AZURE_SUBSCRIPTION_KEY) {
+    logger.error('Missing Azure credentials');
     throw new HttpError(400, 'Missing credentials');
   }
   try {
@@ -16,11 +18,14 @@ export const getToken = async () => {
     const token = await axios({ method: 'POST', url, headers });
 
     if (token) {
+      logger.info('Azure Token received');
       return Promise.resolve(token.data);
     } else {
+      logger.error('Something went wrong when fetching Azure Token');
       return Promise.reject();
     }
   } catch (e) {
+    logger.error('Error getting Azure Token');
     throw new HttpError(501, 'Error getting Azure Token');
   }
 };
