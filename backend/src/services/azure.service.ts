@@ -62,6 +62,10 @@ export const getTranslations: (options: GetTranslationOptions) => Promise<string
       headers,
       data: JSON.stringify(text.map(text => ({ Text: text }))),
       method: 'POST',
+    }).catch(e => {
+      logger.error('Error translating text');
+      logger.error(e);
+      return { data: [] };
     });
     const data = res?.data?.map(data => data?.translations.map(translation => translation.text)).flat();
 
