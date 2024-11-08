@@ -1,5 +1,6 @@
 import { AZURE_REGION } from '@/config';
 import { getToken, getTranslations } from '@/services/azure.service';
+import { logger } from '@/utils/logger';
 import { IsArray, IsString } from 'class-validator';
 import { Body, Controller, Get, HttpError, Post } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
@@ -36,9 +37,16 @@ export class AzureController {
   })
   async translate(@Body() body: TranslationDto) {
     try {
-      const texts = await getTranslations(body);
+      const texts = await getTranslations(body).catch(e => {
+        logger.error('Error in AzureController translate method');
+        logger.error(e);
+        return [];
+      });
       return { data: texts, message: 'success' };
     } catch (e) {
+      logger.error("Error in AzureController's translate method");
+      logger.error(e);
+      logger.error(JSON.stringify(e));
       throw new HttpError(500, e.message);
     }
   }
