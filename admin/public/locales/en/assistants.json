@@ -1,0 +1,22 @@
+{
+  "name_zero": "assistants",
+  "name_one": "assistant",
+  "name_many": "assistants",
+  "name_other": "assistants",
+  "new-apiKey": "Change api key",
+  "generate-apiKey": "Create api key (read-only)",
+  "properties": {
+    "app": "Application name",
+    "assistantId": "Assistant id",
+    "apiKey": "api key"
+  },
+  "error": {
+    "apiKey": {
+      "assistantId": "Fill in an assistant id first",
+      "apiKey": "Fill in a personal api key first",
+      "forbidden": "Check your permissions in Intric",
+      "unauthorized": "Bad credentials. Check your api key",
+      "servererror": "Something went wrong. Try again later"
+    }
+  }
+}

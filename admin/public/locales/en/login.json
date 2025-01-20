@@ -1,0 +1,8 @@
+{
+  "description": "",
+  "errors": {
+    "SAML_MISSING_GROUP": "The user is missing the required group",
+    "SAML_MISSING_ATTRIBUTES": "The user is missing the required attributes",
+    "MISSING_PERMISSIONS": "The user is missing the required permissions"
+  }
+}

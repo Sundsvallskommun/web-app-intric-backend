@@ -45,10 +45,10 @@ import { join } from 'path';
 import { isValidUrl } from './utils/util';
 import { additionalConverters } from './utils/custom-validation-classes';
 import { User } from './interfaces/users.interface';
-import ApiService from './services/api.service';
 import cors from 'cors';
+import prisma from './utils/prisma';
 
-const corsWhitelist = ORIGIN.split(',');
+const corsWhitelistFromEnv = ORIGIN.split(',');
 
 const SessionStoreCreate = SESSION_MEMORY ? createMemoryStore(session) : createFileStore(session);
 const sessionTTL = 4 * 24 * 60 * 60;
@@ -87,13 +87,14 @@ const samlStrategy = new Strategy(
 
     const {
       givenname,
+      givenName,
       surname,
       username,
       citizenIdentifier,
       attributes: { groups },
     } = profile;
 
-    if (!givenname || !surname || !groups || !citizenIdentifier) {
+    if (!(givenname || givenName) || !surname || !groups || !citizenIdentifier) {
       return done({
         name: 'SAML_MISSING_ATTRIBUTES',
         message: 'Missing profile attributes',
@@ -113,7 +114,7 @@ const samlStrategy = new Strategy(
       const findUser: User = {
         userId: citizenIdentifier,
         username: username,
-        name: `${givenname} ${surname}`,
+        name: `${givenname || givenName} ${surname}`,
         isAdmin: isAdmin,
       };
 
@@ -191,7 +192,17 @@ class App {
     this.app.use(
       cors({
         credentials: CREDENTIALS,
-        origin: function (origin, callback) {
+        origin: async function (origin, callback) {
+          let corsWhitelist = corsWhitelistFromEnv;
+          try {
+            const hosts = await prisma.host.findMany();
+            if (hosts && hosts?.length > 0) {
+              corsWhitelist = [...corsWhitelist, ...hosts.map(host => host.host)];
+            }
+          } catch (e) {
+            console.error('Error getting hosts from database', e);
+          }
+
           if (origin === undefined || corsWhitelist.indexOf(origin) !== -1 || corsWhitelist.indexOf('*') !== -1) {
             callback(null, true);
           } else {

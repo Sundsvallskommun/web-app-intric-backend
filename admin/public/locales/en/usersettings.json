@@ -1,0 +1,11 @@
+{
+  "name_zero": "user settings",
+  "name_one": "user setting",
+  "name_many": "user settings",
+  "name_other": "user settings",
+  "new-apiKey": "change key",
+  "properties": {
+    "name": "Name",
+    "apiKey": "Personal api key to Intric"
+  }
+}

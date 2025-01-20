@@ -10,6 +10,7 @@ import { GroupController } from './controllers/group.controller';
 import { HealthController } from './controllers/health.controller';
 import { InfoBlobController } from './controllers/info-blob.controller';
 import { QueryController } from './controllers/query.controller';
+import { AdminHostsController } from './controllers/admin/hosts.controller';
 
 validateEnv();
 
@@ -23,7 +24,8 @@ const app = new App([
   QueryController,
   AdminAsisstantController,
   AdminUserController,
-  AdminApiKeyController
+  AdminApiKeyController,
+  AdminHostsController,
 ]);
 
 app.listen();

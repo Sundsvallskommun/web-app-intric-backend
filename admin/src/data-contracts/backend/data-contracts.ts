@@ -9,51 +9,9 @@
  * ---------------------------------------------------------------
  */
 
-export interface CreateAssistantDto {
-  name: string;
-  prompt: string;
-  completion_model: string;
-  completion_model_kwargs?: object;
-  groups?: any[];
-}
-
-export interface UpdateAssistantDto {
-  name?: string;
-  prompt?: string;
-  completion_model?: string;
-  completion_model_kwargs?: object;
-  groups?: any[];
-}
-
-export interface CreateGroupDto {
-  name: string;
-  is_public?: boolean;
-  embedding_model?: string;
-}
-
-export interface UpdateGroupDto {
-  name: string;
-  is_public?: boolean;
-}
-
-export interface InfoBlobMetadata {
-  url: string;
-  title: string;
-}
-
-export interface UpdateInfoBlobDto {
-  text?: string;
-  metadata?: InfoBlobMetadata;
-}
-
-export interface UpdateInfoBlobsDto {
-  info_blobs: UpdateInfoBlobDto[];
-}
-
-export interface TranslationDto {
-  text: any[];
-  sourcelanguage: string;
-  targetlanguage: string;
+export interface ApiKeyApiResponse {
+  data: string;
+  message: string;
 }
 
 export interface Assistant {
@@ -90,7 +48,68 @@ export interface UserApiResponse {
   message: string;
 }
 
-export interface ApiKeyApiResponse {
-  data: string;
+export interface CreateAssistantDto {
+  name: string;
+  prompt: string;
+  completion_model: string;
+  completion_model_kwargs?: object;
+  groups?: any[];
+}
+
+export interface UpdateAssistantDto {
+  name?: string;
+  prompt?: string;
+  completion_model?: string;
+  completion_model_kwargs?: object;
+  groups?: any[];
+}
+
+export interface TranslationDto {
+  text: any[];
+  sourcelanguage: string;
+  targetlanguage: string;
+}
+
+export interface CreateGroupDto {
+  name: string;
+  is_public?: boolean;
+  embedding_model?: string;
+}
+
+export interface UpdateGroupDto {
+  name: string;
+  is_public?: boolean;
+}
+
+export interface InfoBlobMetadata {
+  url: string;
+  title: string;
+}
+
+export interface UpdateInfoBlobDto {
+  text?: string;
+  metadata?: InfoBlobMetadata;
+}
+
+export interface UpdateInfoBlobsDto {
+  info_blobs: UpdateInfoBlobDto[];
+}
+
+export interface Host {
+  id?: number;
+  host: string;
+}
+
+export interface UpdateHost {
+  host: string;
+}
+
+export interface HostsApiResponse {
+  data: Host[];
+  message: string;
+}
+
+export interface HostApiResponse {
+  data: Host;
   message: string;
 }

@@ -1,0 +1,14 @@
+{
+  "name_zero": "hosts",
+  "name_one": "host",
+  "name_many": "hosts",
+  "name_other": "hosts",
+  "properties": {
+    "host": "url"
+  },
+  "error": {
+    "apiKey": {
+      "host": "You have to fill in an url"
+    }
+  }
+}
