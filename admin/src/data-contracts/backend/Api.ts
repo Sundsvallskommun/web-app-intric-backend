@@ -16,10 +16,13 @@ import {
   AssistantsApiResponse,
   CreateAssistantDto,
   CreateGroupDto,
+  HostApiResponse,
+  HostsApiResponse,
   TranslationDto,
   UpdateAssistant,
   UpdateAssistantDto,
   UpdateGroupDto,
+  UpdateHost,
   UpdateInfoBlobDto,
   UpdateInfoBlobsDto,
   UserApiResponse,
@@ -30,15 +33,119 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
-   * @tags Health
-   * @name HealthControllerUp
-   * @summary Return health check
-   * @request GET:/api/health/up
+   * @tags Admin Api Key
+   * @name AdminApiKeyControllerGetApiKey
+   * @summary Get apikey for assistant
+   * @request GET:/api/admin/apikey/{id}
    */
-  healthControllerUp = (params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/health/up`,
+  adminApiKeyControllerGetApiKey = (id: string, params: RequestParams = {}) =>
+    this.request<ApiKeyApiResponse, any>({
+      path: `/api/admin/apikey/${id}`,
       method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin Asisstant
+   * @name AdminAsisstantControllerGetMany
+   * @summary Get all assistants
+   * @request GET:/api/admin/assistants
+   */
+  adminAsisstantControllerGetMany = (params: RequestParams = {}) =>
+    this.request<AssistantsApiResponse, any>({
+      path: `/api/admin/assistants`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin Asisstant
+   * @name AdminAsisstantControllerCreate
+   * @summary Creates a new assistant
+   * @request POST:/api/admin/assistants
+   */
+  adminAsisstantControllerCreate = (data?: Assistant, params: RequestParams = {}) =>
+    this.request<AssistantApiResponse, any>({
+      path: `/api/admin/assistants`,
+      method: 'POST',
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin Asisstant
+   * @name AdminAsisstantControllerGetOne
+   * @summary Get a single assistant
+   * @request GET:/api/admin/assistants/{id}
+   */
+  adminAsisstantControllerGetOne = (id: number, params: RequestParams = {}) =>
+    this.request<AssistantApiResponse, any>({
+      path: `/api/admin/assistants/${id}`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin Asisstant
+   * @name AdminAsisstantControllerUpdate
+   * @summary Updates an assistant
+   * @request PATCH:/api/admin/assistants/{id}
+   */
+  adminAsisstantControllerUpdate = (id: number, data?: UpdateAssistant, params: RequestParams = {}) =>
+    this.request<AssistantApiResponse, any>({
+      path: `/api/admin/assistants/${id}`,
+      method: 'PATCH',
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin Asisstant
+   * @name AdminAsisstantControllerDelete
+   * @summary Deletes an assistant
+   * @request DELETE:/api/admin/assistants/{id}
+   */
+  adminAsisstantControllerDelete = (id: number, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/admin/assistants/${id}`,
+      method: 'DELETE',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin User
+   * @name AdminUserControllerGetUser
+   * @summary Return current user
+   * @request GET:/api/admin/me
+   */
+  adminUserControllerGetUser = (params: RequestParams = {}) =>
+    this.request<UserApiResponse, any>({
+      path: `/api/admin/me`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Admin User
+   * @name AdminUserControllerUpdateUser
+   * @summary Update current user
+   * @request PATCH:/api/admin/me
+   */
+  adminUserControllerUpdateUser = (data?: any, params: RequestParams = {}) =>
+    this.request<UserApiResponse, any>({
+      path: `/api/admin/me`,
+      method: 'PATCH',
+      body: data,
+      type: ContentType.Json,
       ...params,
     });
   /**
@@ -141,6 +248,36 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<void, any>({
       path: `/api/assistants/${id}/sessions/${sessionId}`,
       method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Azure
+   * @name AzureControllerGetAzureToken
+   * @summary Get auth token for Azure Speech services
+   * @request GET:/api/azure/login
+   */
+  azureControllerGetAzureToken = (params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/azure/login`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Azure
+   * @name AzureControllerTranslate
+   * @summary Get translation of text
+   * @request POST:/api/azure/translate
+   */
+  azureControllerTranslate = (data?: TranslationDto, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/azure/translate`,
+      method: 'POST',
+      body: data,
+      type: ContentType.Json,
       ...params,
     });
   /**
@@ -278,6 +415,20 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
+   * @tags Health
+   * @name HealthControllerUp
+   * @summary Return health check
+   * @request GET:/api/health/up
+   */
+  healthControllerUp = (params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/health/up`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
    * @tags Info Blob
    * @name InfoBlobControllerGetInfoblobs
    * @summary Get info blobs
@@ -401,28 +552,28 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
-   * @tags Azure
-   * @name AzureControllerGetAzureToken
-   * @summary Get auth token for Azure Speech services
-   * @request GET:/api/azure/login
+   * @tags Admin Hosts
+   * @name AdminHostsControllerGetMany
+   * @summary Get all hosts
+   * @request GET:/api/admin/hosts
    */
-  azureControllerGetAzureToken = (params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/azure/login`,
+  adminHostsControllerGetMany = (params: RequestParams = {}) =>
+    this.request<HostsApiResponse, any>({
+      path: `/api/admin/hosts`,
       method: 'GET',
       ...params,
     });
   /**
    * No description
    *
-   * @tags Azure
-   * @name AzureControllerTranslate
-   * @summary Get translation of text
-   * @request POST:/api/azure/translate
+   * @tags Admin Hosts
+   * @name AdminHostsControllerCreate
+   * @summary Creates a new host
+   * @request POST:/api/admin/hosts
    */
-  azureControllerTranslate = (data?: TranslationDto, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/azure/translate`,
+  adminHostsControllerCreate = (data?: UpdateHost, params: RequestParams = {}) =>
+    this.request<HostApiResponse, any>({
+      path: `/api/admin/hosts`,
       method: 'POST',
       body: data,
       type: ContentType.Json,
@@ -431,58 +582,28 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
-   * @tags Admin Asisstant
-   * @name AdminAsisstantControllerGetMany
-   * @summary Get all assistants
-   * @request GET:/api/admin/assistants
+   * @tags Admin Hosts
+   * @name AdminHostsControllerGetOne
+   * @summary Get a single host
+   * @request GET:/api/admin/hosts/{id}
    */
-  adminAsisstantControllerGetMany = (params: RequestParams = {}) =>
-    this.request<AssistantsApiResponse, any>({
-      path: `/api/admin/assistants`,
+  adminHostsControllerGetOne = (id: number, params: RequestParams = {}) =>
+    this.request<HostApiResponse, any>({
+      path: `/api/admin/hosts/${id}`,
       method: 'GET',
       ...params,
     });
   /**
    * No description
    *
-   * @tags Admin Asisstant
-   * @name AdminAsisstantControllerCreate
-   * @summary Creates a new assistant
-   * @request POST:/api/admin/assistants
+   * @tags Admin Hosts
+   * @name AdminHostsControllerUpdate
+   * @summary Updates a host
+   * @request PATCH:/api/admin/hosts/{id}
    */
-  adminAsisstantControllerCreate = (data?: Assistant, params: RequestParams = {}) =>
-    this.request<AssistantApiResponse, any>({
-      path: `/api/admin/assistants`,
-      method: 'POST',
-      body: data,
-      type: ContentType.Json,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Admin Asisstant
-   * @name AdminAsisstantControllerGetOne
-   * @summary Get a single assistant
-   * @request GET:/api/admin/assistants/{id}
-   */
-  adminAsisstantControllerGetOne = (id: number, params: RequestParams = {}) =>
-    this.request<AssistantApiResponse, any>({
-      path: `/api/admin/assistants/${id}`,
-      method: 'GET',
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Admin Asisstant
-   * @name AdminAsisstantControllerUpdate
-   * @summary Updates an assistant
-   * @request PATCH:/api/admin/assistants/{id}
-   */
-  adminAsisstantControllerUpdate = (id: number, data?: UpdateAssistant, params: RequestParams = {}) =>
-    this.request<AssistantApiResponse, any>({
-      path: `/api/admin/assistants/${id}`,
+  adminHostsControllerUpdate = (id: number, data?: UpdateHost, params: RequestParams = {}) =>
+    this.request<HostApiResponse, any>({
+      path: `/api/admin/hosts/${id}`,
       method: 'PATCH',
       body: data,
       type: ContentType.Json,
@@ -491,59 +612,15 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   /**
    * No description
    *
-   * @tags Admin Asisstant
-   * @name AdminAsisstantControllerDelete
-   * @summary Deletes an assistant
-   * @request DELETE:/api/admin/assistants/{id}
+   * @tags Admin Hosts
+   * @name AdminHostsControllerDelete
+   * @summary Deletes a host
+   * @request DELETE:/api/admin/hosts/{id}
    */
-  adminAsisstantControllerDelete = (id: number, params: RequestParams = {}) =>
+  adminHostsControllerDelete = (id: number, params: RequestParams = {}) =>
     this.request<void, any>({
-      path: `/api/admin/assistants/${id}`,
+      path: `/api/admin/hosts/${id}`,
       method: 'DELETE',
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Admin User
-   * @name AdminUserControllerGetUser
-   * @summary Return current user
-   * @request GET:/api/admin/me
-   */
-  adminUserControllerGetUser = (params: RequestParams = {}) =>
-    this.request<UserApiResponse, any>({
-      path: `/api/admin/me`,
-      method: 'GET',
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Admin User
-   * @name AdminUserControllerUpdateUser
-   * @summary Update current user
-   * @request PATCH:/api/admin/me
-   */
-  adminUserControllerUpdateUser = (data?: any, params: RequestParams = {}) =>
-    this.request<UserApiResponse, any>({
-      path: `/api/admin/me`,
-      method: 'PATCH',
-      body: data,
-      type: ContentType.Json,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Admin Api Key
-   * @name AdminApiKeyControllerGetApiKey
-   * @summary Get apikey for assistant
-   * @request GET:/api/admin/apikey/{id}
-   */
-  adminApiKeyControllerGetApiKey = (id: string, params: RequestParams = {}) =>
-    this.request<ApiKeyApiResponse, any>({
-      path: `/api/admin/apikey/${id}`,
-      method: 'GET',
       ...params,
     });
 }

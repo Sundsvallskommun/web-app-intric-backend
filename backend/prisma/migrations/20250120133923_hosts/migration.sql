@@ -1,0 +1,5 @@
+-- CreateTable
+CREATE TABLE "Host" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "host" TEXT NOT NULL
+);

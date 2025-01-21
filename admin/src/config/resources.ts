@@ -1,5 +1,5 @@
 import { Api } from '@data-contracts/backend/Api';
-import { Assistant } from '@data-contracts/backend/data-contracts';
+import { Assistant, Host } from '@data-contracts/backend/data-contracts';
 import { Resource } from '@interfaces/resource';
 
 export const apiService = new Api({
@@ -22,6 +22,18 @@ const assistants: Resource<Assistant> = {
   requiredFields: ['app', 'apiKey', 'assistantId'],
 };
 
-const resources = { assistants };
+const hosts: Resource<Host> = {
+  name: 'hosts',
+  getOne: apiService.adminHostsControllerGetOne,
+  getMany: apiService.adminHostsControllerGetMany,
+  create: apiService.adminHostsControllerCreate,
+  update: apiService.adminHostsControllerUpdate,
+  remove: apiService.adminHostsControllerDelete,
+  defaultValues: {
+    host: '',
+  },
+  requiredFields: ['host'],
+};
+const resources = { assistants, hosts };
 
 export default resources;

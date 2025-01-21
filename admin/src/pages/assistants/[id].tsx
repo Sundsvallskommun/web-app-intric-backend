@@ -66,9 +66,9 @@ export const EditAssistant: React.FC = () => {
 
   const generateKey = () => {
     if (!formdata.assistantId) {
-      setApiKeyError(capitalize(t('assistant:error.apiKey.assistantId')));
+      setApiKeyError(capitalize(t('assistants:error.apiKey.assistantId')));
     } else if (!user.apiKey) {
-      setApiKeyError(capitalize(t('assistant:error.apiKey.apiKey')));
+      setApiKeyError(capitalize(t('assistants:error.apiKey.apiKey')));
     } else {
       apiService
         .adminApiKeyControllerGetApiKey(formdata.assistantId)
@@ -83,7 +83,11 @@ export const EditAssistant: React.FC = () => {
             status: 'error',
           });
           if (e.response.status === 403) {
-            setApiKeyError(capitalize(t('assistant:error.apiKey.forbidden')));
+            setApiKeyError(capitalize(t('assistants:error.apiKey.forbidden')));
+          } else if (e.response.status === 401) {
+            setApiKeyError(capitalize(t('assistants:error.apiKey.unauthorized')));
+          } else {
+            setApiKeyError(capitalize(t('assistants:error.apiKey.servererror')));
           }
         });
     }
@@ -203,16 +207,17 @@ export const EditAssistant: React.FC = () => {
                     </Button>
                   )}
                 </div>
-
-                <Button
-                  onClick={() => generateKey()}
-                  className="w-fit"
-                  variant="secondary"
-                  disabled={hasApiKey}
-                  leftIcon={<Icon icon={<Key />} />}
-                >
-                  {capitalize(t('assistants:generate-apiKey'))}
-                </Button>
+                {user.apiKey && (
+                  <Button
+                    onClick={() => generateKey()}
+                    className="w-fit"
+                    variant="secondary"
+                    disabled={hasApiKey}
+                    leftIcon={<Icon icon={<Key />} />}
+                  >
+                    {capitalize(t('assistants:generate-apiKey'))}
+                  </Button>
+                )}
                 {apiKeyError && <div className="text-small font-bold">{apiKeyError}</div>}
               </FormControl>
             </div>

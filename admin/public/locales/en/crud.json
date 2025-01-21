@@ -1,0 +1,20 @@
+{
+  "get_one": {
+    "error": "Could not fetch {{resource}}"
+  },
+  "get_many": {
+    "error": "Could not fetch {{resource}}"
+  },
+  "create": {
+    "success": "Saved {{resource}}",
+    "error": "Could not create {{resource}}"
+  },
+  "update": {
+    "success": "Saved {{resource}}",
+    "error": "Could not update {{resource}}"
+  },
+  "remove": {
+    "success": "Removed {{resource}}",
+    "error": "Could not remove {{resource}}"
+  }
+}
