@@ -52,7 +52,7 @@ export const EditResourceArray: React.FC<EditResourceArrayProps> = ({
         return entries?.[property] || defaultValues?.[property];
       }, []);
       const entries = [...formdata, ...(Array.isArray(newEntry) ? newEntry : [newEntry])];
-      setValue(dataTypeKey as keyof DataType, entries as typeof formdata);
+      setValue(dataTypeKey as keyof DataType, entries as unknown as DataType[keyof DataType]);
     }
   };
 
@@ -60,7 +60,7 @@ export const EditResourceArray: React.FC<EditResourceArrayProps> = ({
     if (Array.isArray(formdata)) {
       const entries = [...formdata];
       entries.splice(index, 1);
-      setValue(dataTypeKey as keyof DataType, entries as typeof formdata);
+      setValue(dataTypeKey as keyof DataType, entries as unknown as DataType[keyof DataType]);
     }
   };
 
