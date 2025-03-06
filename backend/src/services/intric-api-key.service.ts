@@ -17,6 +17,10 @@ import { Request } from 'express';
 import prisma from '../utils/prisma';
 
 export const getApiKey = async (req: Request) => {
+  if (req.headers?.['_apikey']) {
+    return req.headers['_apikey'];
+  }
+
   const app = req.headers['_skapp'] ? (req.headers['_skapp'] as string) : undefined;
   if (typeof app !== 'string') {
     console.log('Application id missing');
