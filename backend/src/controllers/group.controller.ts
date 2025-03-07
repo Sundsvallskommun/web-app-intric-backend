@@ -1,11 +1,12 @@
 import {
   CreateGroupRequest,
-  GroupPublic,
-  GroupUpdatePublic,
+  DeleteGroupResponse,
+  GroupPublicWithMetadata,
   InfoBlobPublic,
   InfoBlobUpsertRequest,
   PaginatedResponseGroupPublicWithMetadata,
   PaginatedResponseInfoBlobPublic,
+  PartialGroupUpdatePublic,
 } from '@/data-contracts/intric/data-contracts';
 import { CreateGroupDto, UpdateGroupDto } from '@/dtos/group.dto';
 import { UpdateInfoBlobsDto } from '@/dtos/info-blob.dto';
@@ -29,7 +30,7 @@ export class GroupController {
   @UseBefore(hashMiddleware)
   async get_user_groups(@Req() req: Request, @Res() response: any): Promise<PaginatedResponseGroupPublicWithMetadata> {
     const url = '/groups/';
-    const apiKey = await  getApiKey(req);
+    const apiKey = await getApiKey(req);
     const res = await this.intricApiService.get<PaginatedResponseGroupPublicWithMetadata>({ url, headers: { 'api-key': apiKey } });
     return res.data;
   }
@@ -45,39 +46,33 @@ export class GroupController {
 
   @Get('/groups/:id')
   @UseBefore(hashMiddleware)
-  async get_group_by_id(@Req() req: Request, @Param('id') id: string): Promise<GroupPublic> {
+  async get_group_by_id(@Req() req: Request, @Param('id') id: string): Promise<GroupPublicWithMetadata> {
     const url = `/groups/${id}/`;
     const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.get<GroupPublic>({ url, headers: { 'api-key': apiKey } });
-    return res.data;
-  }
-
-  @Post('/groups')
-  @UseBefore(hashMiddleware)
-  @UseBefore(validationMiddleware(CreateGroupDto, 'body'))
-  async create_group(@Req() req: any, @Body() body: CreateGroupDto): Promise<GroupPublic> {
-    const url = `/groups/`;
-    const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.post<GroupPublic, CreateGroupRequest>({ url, headers: { 'api-key': apiKey }, data: body });
+    const res = await this.intricApiService.get<GroupPublicWithMetadata>({ url, headers: { 'api-key': apiKey } });
     return res.data;
   }
 
   @Post('/groups/:id')
   @UseBefore(hashMiddleware)
   @UseBefore(validationMiddleware(UpdateGroupDto, 'body'))
-  async update_group(@Req() req: Request, @Param('id') id: string, @Body() body: UpdateGroupDto): Promise<GroupPublic> {
+  async update_group(@Req() req: Request, @Param('id') id: string, @Body() body: UpdateGroupDto): Promise<GroupPublicWithMetadata> {
     const url = `/groups/${id}/`;
     const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.post<GroupPublic, GroupUpdatePublic>({ url, headers: { 'api-key': apiKey }, data: body });
+    const res = await this.intricApiService.post<GroupPublicWithMetadata, PartialGroupUpdatePublic>({
+      url,
+      headers: { 'api-key': apiKey },
+      data: body,
+    });
     return res.data;
   }
 
   @Delete('/groups/:id')
   @UseBefore(hashMiddleware)
-  async delete_group(@Req() req: Request, @Param('id') id: string): Promise<GroupPublic> {
+  async delete_group(@Req() req: Request, @Param('id') id: string): Promise<DeleteGroupResponse> {
     const url = `/groups/${id}/`;
     const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.delete<GroupPublic>({ url, headers: { 'api-key': apiKey } });
+    const res = await this.intricApiService.delete<DeleteGroupResponse>({ url, headers: { 'api-key': apiKey } });
     return res.data;
   }
 
