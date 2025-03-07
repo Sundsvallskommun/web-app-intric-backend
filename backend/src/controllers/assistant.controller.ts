@@ -1,12 +1,11 @@
 import {
-  AssistantCreatePublic,
   AssistantPublic,
-  AssistantUpsertPublic,
+  CursorPaginatedResponseSessionMetadataPublic,
   PaginatedResponseAssistantPublic,
-  PaginatedResponseSessionMetadataPublic,
+  PartialAssistantUpdatePublic,
   SessionPublic,
 } from '@/data-contracts/intric/data-contracts';
-import { CreateAssistantDto, UpdateAssistantDto } from '@/dtos/assistant.dto';
+import { UpdateAssistantDto } from '@/dtos/assistant.dto';
 import applicationModeMiddleware from '@/middlewares/application-mode.middleware';
 import hashMiddleware from '@/middlewares/hash.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
@@ -28,16 +27,6 @@ export class AssistantController {
     return res.data;
   }
 
-  @Post('/assistants')
-  @UseBefore(hashMiddleware)
-  @UseBefore(validationMiddleware(CreateAssistantDto, 'body'))
-  async create_assistant(@Req() req, @Body() body: CreateAssistantDto): Promise<AssistantPublic> {
-    const url = `/assistants/`;
-    const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.post<AssistantPublic, AssistantCreatePublic>({ url, headers: { 'api-key': apiKey }, data: body });
-    return res.data;
-  }
-
   @Get('/assistants/:id')
   @UseBefore(hashMiddleware)
   async get_assistant_by_id(@Req() req, @Param('id') id: string) {
@@ -51,16 +40,16 @@ export class AssistantController {
   @UseBefore(hashMiddleware)
   @UseBefore(validationMiddleware(UpdateAssistantDto, 'body'))
   async update_assistant(@Req() req: Request, @Param('id') id: string, @Body() body: UpdateAssistantDto): Promise<AssistantPublic> {
-    const url = `/groups/${id}/`;
+    const url = `/assistants/${id}/`;
     const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.post<AssistantPublic, AssistantUpsertPublic>({ url, headers: { 'api-key': apiKey }, data: body });
+    const res = await this.intricApiService.post<AssistantPublic, PartialAssistantUpdatePublic>({ url, headers: { 'api-key': apiKey }, data: body });
     return res.data;
   }
 
   @Delete('/assistants/:id')
   @UseBefore(hashMiddleware)
   async delete_assistant(@Req() req: Request, @Param('id') id: string): Promise<AssistantPublic> {
-    const url = `/groups/${id}/`;
+    const url = `/assistants/${id}/`;
     const apiKey = await getApiKey(req);
     const res = await this.intricApiService.delete<AssistantPublic>({ url, headers: { 'api-key': apiKey } });
     return res.data;
@@ -71,7 +60,7 @@ export class AssistantController {
   async get_assistant_sessions(@Req() req, @Param('id') id: string) {
     const url = `/assistants/${id}/sessions/`;
     const apiKey = await getApiKey(req);
-    const res = await this.intricApiService.get<PaginatedResponseSessionMetadataPublic>({ url, headers: { 'api-key': apiKey } });
+    const res = await this.intricApiService.get<CursorPaginatedResponseSessionMetadataPublic>({ url, headers: { 'api-key': apiKey } });
     return res.data;
   }
 

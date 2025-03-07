@@ -11,6 +11,7 @@ import { HealthController } from './controllers/health.controller';
 import { InfoBlobController } from './controllers/info-blob.controller';
 import { QueryController } from './controllers/query.controller';
 import { AdminHostsController } from './controllers/admin/hosts.controller';
+import { SpaceController } from './controllers/space.controller';
 
 validateEnv();
 
@@ -26,6 +27,7 @@ const app = new App([
   AdminUserController,
   AdminApiKeyController,
   AdminHostsController,
+  SpaceController,
 ]);
 
 app.listen();

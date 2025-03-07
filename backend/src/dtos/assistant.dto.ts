@@ -1,35 +1,92 @@
-import { AssistantCreatePublic, AssistantUpsertPublic, GroupId, PaginatedResponseAssistantPublic } from '@/data-contracts/intric/data-contracts';
-import { IsArray, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  AssistantGuard as AssistantGuardType,
+  ModelId as ModelIdType,
+  ModelKwargs,
+  PartialAssistantUpdatePublic,
+  PromptCreate,
+} from '@/data-contracts/intric/data-contracts';
+import { IsNullable } from '@/utils/custom-validation-classes';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-export class CreateAssistantDto implements AssistantCreatePublic {
+export class NewPrompt implements PromptCreate {
   @IsString()
-  name: string;
+  text: string;
   @IsString()
-  prompt: string;
-  @IsString()
-  completion_model: string;
-  @IsObject()
   @IsOptional()
-  completion_model_kwargs?: object;
-  @IsArray()
-  @IsOptional()
-  groups?: GroupId[];
+  @IsNullable()
+  description?: string | null;
 }
 
-export class UpdateAssistantDto implements AssistantUpsertPublic {
+export class ModelId implements ModelIdType {
+  @IsString()
+  id: string;
+}
+
+export class CompletionModelKwargs implements ModelKwargs {
+  @IsNumber()
+  @IsOptional()
+  @IsNullable()
+  temperature?: number | null;
+  @IsNumber()
+  @IsOptional()
+  @IsNullable()
+  top_p?: number | null;
+}
+
+export class AssistantGuard implements AssistantGuardType {
+  @IsBoolean()
+  @IsOptional()
+  guardrail_active?: boolean;
   @IsString()
   @IsOptional()
-  name: string;
+  guardrail_string?: string;
   @IsString()
   @IsOptional()
-  prompt: string;
+  on_fail_message?: string;
+}
+export class UpdateAssistantDto implements PartialAssistantUpdatePublic {
   @IsString()
   @IsOptional()
-  completion_model: string;
-  @IsObject()
+  @IsNullable()
+  name: string | null;
   @IsOptional()
-  completion_model_kwargs?: object;
-  @IsArray()
+  @Type(() => NewPrompt)
+  @ValidateNested()
+  prompt: PromptCreate;
+  @IsNullable()
   @IsOptional()
-  groups?: GroupId[];
+  @Type(() => ModelId)
+  completion_model: ModelIdType;
+  @IsOptional()
+  @IsNullable()
+  @Type(() => CompletionModelKwargs)
+  completion_model_kwargs?: ModelKwargs | null;
+  @Type(() => ModelId)
+  @ValidateNested({ each: true })
+  @IsOptional()
+  @IsNullable()
+  groups?: ModelIdType[] | null;
+  @Type(() => ModelId)
+  @ValidateNested({ each: true })
+  @IsOptional()
+  @IsNullable()
+  websites?: ModelIdType[] | null;
+  @IsBoolean()
+  @IsOptional()
+  @IsNullable()
+  logging_enabled?: boolean | null;
+  @IsString()
+  @IsOptional()
+  @IsNullable()
+  space_id?: string | null;
+  @IsOptional()
+  @IsNullable()
+  @Type(() => AssistantGuard)
+  guardrail?: AssistantGuardType | null;
+  @IsOptional()
+  @IsNullable()
+  @Type(() => ModelId)
+  @ValidateNested({ each: true })
+  attachments?: ModelIdType[] | null;
 }
