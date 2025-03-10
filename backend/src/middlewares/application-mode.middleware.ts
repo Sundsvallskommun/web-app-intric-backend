@@ -3,6 +3,7 @@ import { HttpException } from '@/exceptions/HttpException';
 import { NextFunction, Request, Response } from 'express';
 
 const applicationModeMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  //NOTE: This is deprecated?
   if (APPLICATION_MODE === 'INTERNAL') {
     next();
   } else {
