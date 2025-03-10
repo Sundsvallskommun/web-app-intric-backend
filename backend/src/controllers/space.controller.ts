@@ -20,8 +20,6 @@ export class SpaceController {
       const apiKey = await getApiKey(req);
       const res = await this.intricApiService.get<PaginatedResponseSpaceSparse>({ url, headers: { 'api-key': apiKey } });
       if (personal) {
-        console.log('🚀 ~ SpaceController ~ get_user_spaces ~ personal:', personal);
-
         try {
           const personal_url = '/spaces/type/personal/';
           const personal = await this.intricApiService.get<SpacePublic>({ url: personal_url, headers: { 'api-key': apiKey } });
@@ -40,6 +38,20 @@ export class SpaceController {
     } catch (e) {
       console.error('Error getting spaces', e);
       logger.error('Error getting spaces', e);
+    }
+  }
+
+  @Get('/spaces/personal')
+  @UseBefore(hashMiddleware)
+  async get_personal_space(@Req() req: Request, @Res() response: any): Promise<SpacePublic> {
+    try {
+      const url = `/spaces/type/personal/`;
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.get<SpacePublic>({ url, headers: { 'api-key': apiKey } });
+
+      return res.data;
+    } catch (e) {
+      logger.error('Error getting space', e);
     }
   }
 
