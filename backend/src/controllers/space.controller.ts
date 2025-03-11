@@ -57,7 +57,7 @@ export class SpaceController {
 
   @Get('/spaces/:id')
   @UseBefore(hashMiddleware)
-  async get_single_space(@Req() req: Request, @Param(':id') id: string, @Res() response: any): Promise<SpacePublic> {
+  async get_single_space(@Req() req: Request, @Param('id') id: string, @Res() response: any): Promise<SpacePublic> {
     try {
       const url = `/spaces/${id}`;
       const apiKey = await getApiKey(req);
