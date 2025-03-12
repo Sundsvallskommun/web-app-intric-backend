@@ -1,5 +1,4 @@
 import {
-  CreateGroupRequest,
   DeleteGroupResponse,
   GroupPublicWithMetadata,
   InfoBlobPublic,
@@ -8,7 +7,7 @@ import {
   PaginatedResponseInfoBlobPublic,
   PartialGroupUpdatePublic,
 } from '@/data-contracts/intric/data-contracts';
-import { CreateGroupDto, UpdateGroupDto } from '@/dtos/group.dto';
+import { UpdateGroupDto } from '@/dtos/group.dto';
 import { UpdateInfoBlobsDto } from '@/dtos/info-blob.dto';
 import applicationModeMiddleware from '@/middlewares/application-mode.middleware';
 import hashMiddleware from '@/middlewares/hash.middleware';
