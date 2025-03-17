@@ -12,6 +12,7 @@ import { InfoBlobController } from './controllers/info-blob.controller';
 import { QueryController } from './controllers/query.controller';
 import { AdminHostsController } from './controllers/admin/hosts.controller';
 import { SpaceController } from './controllers/space.controller';
+import { UserController } from './controllers/user.controller';
 
 validateEnv();
 
@@ -28,6 +29,7 @@ const app = new App([
   AdminApiKeyController,
   AdminHostsController,
   SpaceController,
+  UserController,
 ]);
 
 app.listen();
