@@ -89,4 +89,8 @@ export class UpdateAssistantDto implements PartialAssistantUpdatePublic {
   @Type(() => ModelId)
   @ValidateNested({ each: true })
   attachments?: ModelIdType[] | null;
+  @IsOptional()
+  @IsNullable()
+  @IsString()
+  description?: string | null;
 }
