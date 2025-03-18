@@ -152,6 +152,7 @@ export interface AppPublic {
   allowed_attachments: FileRestrictions;
   /** Published */
   published: boolean;
+  transcription_model: TranscriptionModelPublic;
 }
 
 /** AppRunInput */
@@ -271,7 +272,7 @@ export interface AppTemplatePublic {
   category: string;
   app: AppInTemplatePublic;
   /** Type */
-  type: AppTemplatePublicTypeEnum;
+  type: 'app';
   wizard: AppTemplateWizard;
   organization: AppTemplateOrganization;
 }
@@ -285,6 +286,7 @@ export interface AppTemplateWizard {
 /** Applications */
 export interface Applications {
   assistants: PaginatedPermissionsAssistantSparse;
+  group_chats: PaginatedPermissionsGroupChatSparse;
   services: PaginatedPermissionsServiceSparse;
   apps: PaginatedPermissionsAppSparse;
 }
@@ -306,6 +308,8 @@ export interface AskAnalysis {
 export interface AskAssistant {
   /** Question */
   question: string;
+  /** Session Id */
+  session_id?: string | null;
   /**
    * Files
    * @maxItems 5
@@ -318,6 +322,24 @@ export interface AskAssistant {
    */
   stream?: boolean;
   tools?: UseTools | null;
+}
+
+/** AskChatResponse */
+export interface AskChatResponse {
+  /**
+   * Session Id
+   * @format uuid
+   */
+  session_id: string;
+  /** Question */
+  question: string;
+  /** Files */
+  files: FilePublic[];
+  /** Answer */
+  answer: string;
+  /** References */
+  references: InfoBlobAskAssistantPublic[];
+  tools: UseTools;
 }
 
 /** AskResponse */
@@ -366,6 +388,11 @@ export interface AssistantCreatePublic {
    * @default []
    */
   websites?: ModelId[];
+  /**
+   * Integration Knowledge List
+   * @default []
+   */
+  integration_knowledge_list?: ModelId[];
   guardrail?: AssistantGuard | null;
   completion_model: ModelId;
 }
@@ -450,6 +477,8 @@ export interface AssistantPublic {
   groups: GroupPublicWithMetadata[];
   /** Websites */
   websites: WebsiteSparse[];
+  /** Integration Knowledge List */
+  integration_knowledge_list: IntegrationKnowledgePublic[];
   completion_model: CompletionModelSparse;
   /**
    * Published
@@ -458,6 +487,12 @@ export interface AssistantPublic {
   published?: boolean;
   user: UserSparse;
   tools: Tools;
+  /**
+   * Description
+   * A description of the assitant that will be used as default description in GroupChatAssistantPublic
+   * @example "This is a helpful AI assistant"
+   */
+  description?: string | null;
 }
 
 /** AssistantSparse */
@@ -495,6 +530,8 @@ export interface AssistantSparse {
    * @default false
    */
   published?: boolean;
+  /** Description */
+  description?: string | null;
 }
 
 /** AssistantTemplateListPublic */
@@ -539,7 +576,7 @@ export interface AssistantTemplatePublic {
   category: string;
   assistant: AssistantInTemplatePublic;
   /** Type */
-  type: AssistantTemplatePublicTypeEnum;
+  type: 'assistant';
   wizard: AssistantTemplateWizard;
   organization: AssistantTemplateOrganization;
 }
@@ -627,7 +664,7 @@ export interface CompletionModel {
   name: string;
   /** Nickname */
   nickname: string;
-  family: CompletionModelFamily;
+  family: ModelFamily;
   /** Token Limit */
   token_limit: number;
   /** Is Deprecated */
@@ -644,11 +681,13 @@ export interface CompletionModel {
   description?: string | null;
   /** Deployment Name */
   deployment_name?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
   /** Vision */
   vision: boolean;
   /** Reasoning */
   reasoning: boolean;
+  /** Base Url */
+  base_url?: string | null;
   /**
    * Is Org Enabled
    * @default false
@@ -659,15 +698,6 @@ export interface CompletionModel {
    * @default false
    */
   is_org_default?: boolean;
-}
-
-/** CompletionModelFamily */
-export enum CompletionModelFamily {
-  Openai = 'openai',
-  Mistral = 'mistral',
-  Vllm = 'vllm',
-  Claude = 'claude',
-  Azure = 'azure',
 }
 
 /** CompletionModelPublic */
@@ -685,7 +715,7 @@ export interface CompletionModelPublic {
   name: string;
   /** Nickname */
   nickname: string;
-  family: CompletionModelFamily;
+  family: ModelFamily;
   /** Token Limit */
   token_limit: number;
   /** Is Deprecated */
@@ -702,11 +732,13 @@ export interface CompletionModelPublic {
   description?: string | null;
   /** Deployment Name */
   deployment_name?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
   /** Vision */
   vision: boolean;
   /** Reasoning */
   reasoning: boolean;
+  /** Base Url */
+  base_url?: string | null;
   /**
    * Is Org Enabled
    * @default false
@@ -762,7 +794,7 @@ export interface CompletionModelSparse {
   name: string;
   /** Nickname */
   nickname: string;
-  family: CompletionModelFamily;
+  family: ModelFamily;
   /** Token Limit */
   token_limit: number;
   /** Is Deprecated */
@@ -779,11 +811,13 @@ export interface CompletionModelSparse {
   description?: string | null;
   /** Deployment Name */
   deployment_name?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
   /** Vision */
   vision: boolean;
   /** Reasoning */
   reasoning: boolean;
+  /** Base Url */
+  base_url?: string | null;
 }
 
 /** CompletionModelUpdateFlags */
@@ -792,6 +826,47 @@ export interface CompletionModelUpdateFlags {
   is_org_enabled?: boolean | null;
   /** Is Org Default */
   is_org_default?: boolean | null;
+}
+
+/** ContentDisposition */
+export enum ContentDisposition {
+  Attachment = 'attachment',
+  Inline = 'inline',
+}
+
+/**
+ * ConversationRequest
+ * A unified model for asking questions to either assistants or group chats.
+ *
+ * Either session_id, assistant_id, or group_chat_id must be provided.
+ * If session_id is provided, the conversation will continue with the existing session.
+ *
+ * For group chats:
+ * - If tools.assistants contains an assistant, that specific assistant will be targeted
+ *   (requires the group chat to have allow_mentions=True).
+ * - If no assistant is targeted, the most appropriate assistant will be selected.
+ */
+export interface ConversationRequest {
+  /** Question */
+  question: string;
+  /** Session Id */
+  session_id?: string | null;
+  /** Assistant Id */
+  assistant_id?: string | null;
+  /** Group Chat Id */
+  group_chat_id?: string | null;
+  /**
+   * Files
+   * @maxItems 5
+   * @default []
+   */
+  files?: ModelId[];
+  /**
+   * Stream
+   * @default false
+   */
+  stream?: boolean;
+  tools?: UseTools | null;
 }
 
 /** Counts */
@@ -934,6 +1009,17 @@ export interface CreateSpaceGroupsResponse {
   name: string;
   embedding_model: EmbeddingModelSparse | null;
   metadata: GroupMetadata;
+}
+
+/** CreateSpaceIntegrationKnowledge */
+export interface CreateSpaceIntegrationKnowledge {
+  /** Name */
+  name: string;
+  embedding_model: ModelId;
+  /** Url */
+  url: string;
+  /** Key */
+  key?: string | null;
 }
 
 /** CreateSpaceRequest */
@@ -1109,6 +1195,8 @@ export interface DefaultAssistant {
   groups: GroupPublicWithMetadata[];
   /** Websites */
   websites: WebsiteSparse[];
+  /** Integration Knowledge List */
+  integration_knowledge_list: IntegrationKnowledgePublic[];
   completion_model?: CompletionModelSparse | null;
   /**
    * Published
@@ -1117,6 +1205,12 @@ export interface DefaultAssistant {
   published?: boolean;
   user: UserSparse;
   tools: Tools;
+  /**
+   * Description
+   * A description of the assitant that will be used as default description in GroupChatAssistantPublic
+   * @example "This is a helpful AI assistant"
+   */
+  description?: string | null;
 }
 
 /** DeleteGroupResponse */
@@ -1181,7 +1275,7 @@ export interface EmbeddingModel {
   hosting: ModelHostingLocation;
   /** Description */
   description?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
   /**
    * Is Org Enabled
    * @default false
@@ -1224,7 +1318,7 @@ export interface EmbeddingModelPublic {
   hosting: ModelHostingLocation;
   /** Description */
   description?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
   /**
    * Is Org Enabled
    * @default false
@@ -1270,7 +1364,7 @@ export interface EmbeddingModelPublicBase {
   hosting: ModelHostingLocation;
   /** Description */
   description?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
 }
 
 /** EmbeddingModelSparse */
@@ -1301,7 +1395,7 @@ export interface EmbeddingModelSparse {
   hosting: ModelHostingLocation;
   /** Description */
   description?: string | null;
-  org?: Orgs | null;
+  org?: ModelOrg | null;
 }
 
 /** EmbeddingModelUpdateFlags */
@@ -1339,6 +1433,8 @@ export enum ErrorCodes {
   Value9021 = 9021,
   Value9022 = 9022,
   Value9023 = 9023,
+  Value9024 = 9024,
+  Value9025 = 9025,
 }
 
 /** FilePublic */
@@ -1358,6 +1454,8 @@ export interface FilePublic {
   mimetype: string;
   /** Size */
   size: number;
+  /** Transcription */
+  transcription?: string | null;
 }
 
 /** FileRestrictions */
@@ -1392,6 +1490,170 @@ export interface GetModelsResponse {
   completion_models: CompletionModelPublic[];
   /** Embedding Models */
   embedding_models: EmbeddingModelPublic[];
+}
+
+/** GroupChatAssistantPublic */
+export interface GroupChatAssistantPublic {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Handle */
+  handle: string;
+  /**
+   * Default Description
+   * The default description inherited from AssistantPublic. Cannot be null if user_description is null.
+   * @example "Default AI Assistant description"
+   */
+  default_description?: string | null;
+  /**
+   * User Description
+   * Custom description provided by the user. Cannot be null if default_description is null.
+   * @example "My custom AI assistant description"
+   */
+  user_description?: string | null;
+}
+
+/** GroupChatAssistantUpdateSchema */
+export interface GroupChatAssistantUpdateSchema {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * User Description
+   * Custom description provided by the user. Cannot be null if 'description' of assistant is null.
+   * @example "My custom AI assistant description"
+   */
+  user_description: string | null;
+}
+
+/**
+ * GroupChatCreate
+ * Attributes:
+ *     name: str
+ */
+export interface GroupChatCreate {
+  /** Name */
+  name: string;
+}
+
+/**
+ * GroupChatPublic
+ * Represents a group chat of assistants.
+ *
+ * Attributes:
+ *     created_at: datetime
+ *     updated_at: datetime
+ *     name: str
+ *     id: UUID
+ *     space_id: UUID
+ *     allow_mentions: bool
+ *     show_response_label: bool
+ *     tools: GroupChatTools
+ */
+export interface GroupChatPublic {
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /** Name */
+  name: string;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Space Id
+   * @format uuid
+   */
+  space_id: string;
+  /** Allow Mentions */
+  allow_mentions: boolean;
+  /** Show Response Label */
+  show_response_label: boolean;
+  /** Published */
+  published: boolean;
+  tools: GroupChatTools;
+  /** Permissions */
+  permissions: ResourcePermission[];
+}
+
+/** GroupChatSparse */
+export interface GroupChatSparse {
+  /**
+   * Permissions
+   * @default []
+   */
+  permissions?: ResourcePermission[];
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /** Name */
+  name: string;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * User Id
+   * @format uuid
+   */
+  user_id: string;
+  /** Published */
+  published: boolean;
+}
+
+/** GroupChatTools */
+export interface GroupChatTools {
+  /** Assistants */
+  assistants: GroupChatAssistantPublic[];
+}
+
+/** GroupChatUpdateSchema */
+export interface GroupChatUpdateSchema {
+  /**
+   * Name
+   * The name of the group chat.
+   */
+  name?: string | null;
+  /** Space Id */
+  space_id?: string | null;
+  /** Tools available in the group chat. */
+  tools?: GroupChatUpdateTools | null;
+  /**
+   * Allow Mentions
+   * Indicates if mentions are allowed.
+   */
+  allow_mentions?: boolean | null;
+  /**
+   * Show Response Label
+   * Indicates if the response label should be shown.
+   */
+  show_response_label?: boolean | null;
+}
+
+/** GroupChatUpdateTools */
+export interface GroupChatUpdateTools {
+  /** Assistants */
+  assistants: GroupChatAssistantUpdateSchema[];
 }
 
 /** GroupMetadata */
@@ -1598,6 +1860,8 @@ export interface Integration {
   name: string;
   /** Description */
   description: string;
+  /** Integration Type */
+  integration_type: string;
 }
 
 /** IntegrationCreate */
@@ -1606,12 +1870,75 @@ export interface IntegrationCreate {
   name: string;
   /** Description */
   description: string;
+  /** Integration Type */
+  integration_type: string;
+}
+
+/** IntegrationKnowledgeMetaData */
+export interface IntegrationKnowledgeMetaData {
+  /** Size */
+  size: number;
+}
+
+/** IntegrationKnowledgePublic */
+export interface IntegrationKnowledgePublic {
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /** Name */
+  name: string;
+  /** Url */
+  url: string;
+  /**
+   * Tenant Id
+   * @format uuid
+   */
+  tenant_id: string;
+  /**
+   * Space Id
+   * @format uuid
+   */
+  space_id: string;
+  /**
+   * User Integration Id
+   * @format uuid
+   */
+  user_integration_id: string;
+  embedding_model: EmbeddingModelPublic;
+  /**
+   * Permissions
+   * @default []
+   */
+  permissions?: ResourcePermission[];
+  metadata: IntegrationKnowledgeMetaData;
 }
 
 /** IntegrationList */
 export interface IntegrationList {
   /** Items */
   items: Integration[];
+  /** Count */
+  count: number;
+}
+
+/** IntegrationPreviewData */
+export interface IntegrationPreviewData {
+  /** Key */
+  key: string;
+  /** Type */
+  type: string;
+  /** Name */
+  name: string;
+  /** Url */
+  url: string;
+}
+
+/** IntegrationPreviewDataList */
+export interface IntegrationPreviewDataList {
+  /** Items */
+  items: IntegrationPreviewData[];
   /** Count */
   count: number;
 }
@@ -1641,6 +1968,7 @@ export interface JobPublic {
 export interface Knowledge {
   groups: PaginatedPermissionsGroupPublicWithMetadata;
   websites: PaginatedPermissionsWebsiteSparse;
+  integration_knowledge_list: PaginatedPermissionsIntegrationKnowledgePublic;
 }
 
 /** Limit */
@@ -1724,6 +2052,16 @@ export interface MetadataStatistics {
   questions: QuestionMetadata[];
 }
 
+/** ModelFamily */
+export enum ModelFamily {
+  Openai = 'openai',
+  Mistral = 'mistral',
+  Vllm = 'vllm',
+  Claude = 'claude',
+  Azure = 'azure',
+  Ovhcloud = 'ovhcloud',
+}
+
 /** ModelHostingLocation */
 export enum ModelHostingLocation {
   Usa = 'usa',
@@ -1746,6 +2084,16 @@ export interface ModelKwargs {
   temperature?: number | null;
   /** Top P */
   top_p?: number | null;
+}
+
+/** ModelOrg */
+export enum ModelOrg {
+  OpenAI = 'OpenAI',
+  Meta = 'Meta',
+  Microsoft = 'Microsoft',
+  Anthropic = 'Anthropic',
+  Mistral = 'Mistral',
+  KBLab = 'KBLab',
 }
 
 /** ModelStability */
@@ -1811,14 +2159,6 @@ export interface OpenIdConnectLogin {
   nonce?: string;
 }
 
-/** Orgs */
-export enum Orgs {
-  OpenAI = 'OpenAI',
-  Meta = 'Meta',
-  Microsoft = 'Microsoft',
-  Anthropic = 'Anthropic',
-}
-
 /** PaginatedPermissions[AppSparse] */
 export interface PaginatedPermissionsAppSparse {
   /**
@@ -1857,6 +2197,25 @@ export interface PaginatedPermissionsAssistantSparse {
   count: number;
 }
 
+/** PaginatedPermissions[GroupChatSparse] */
+export interface PaginatedPermissionsGroupChatSparse {
+  /**
+   * Permissions
+   * @default []
+   */
+  permissions?: ResourcePermission[];
+  /**
+   * Items
+   * List of items returned in the response
+   */
+  items: GroupChatSparse[];
+  /**
+   * Count
+   * Number of items returned in the response
+   */
+  count: number;
+}
+
 /** PaginatedPermissions[GroupPublicWithMetadata] */
 export interface PaginatedPermissionsGroupPublicWithMetadata {
   /**
@@ -1869,6 +2228,25 @@ export interface PaginatedPermissionsGroupPublicWithMetadata {
    * List of items returned in the response
    */
   items: GroupPublicWithMetadata[];
+  /**
+   * Count
+   * Number of items returned in the response
+   */
+  count: number;
+}
+
+/** PaginatedPermissions[IntegrationKnowledgePublic] */
+export interface PaginatedPermissionsIntegrationKnowledgePublic {
+  /**
+   * Permissions
+   * @default []
+   */
+  permissions?: ResourcePermission[];
+  /**
+   * Items
+   * List of items returned in the response
+   */
+  items: IntegrationKnowledgePublic[];
   /**
    * Count
    * Number of items returned in the response
@@ -2269,6 +2647,20 @@ export interface PaginatedResponseTenantInDB {
   count: number;
 }
 
+/** PaginatedResponse[TranscriptionModelPublic] */
+export interface PaginatedResponseTranscriptionModelPublic {
+  /**
+   * Items
+   * List of items returned in the response
+   */
+  items: TranscriptionModelPublic[];
+  /**
+   * Count
+   * Number of items returned in the response
+   */
+  count: number;
+}
+
 /** PaginatedResponse[UserAdminView] */
 export interface PaginatedResponseUserAdminView {
   /**
@@ -2352,6 +2744,7 @@ export interface PartialAppUpdateRequest {
   prompt?: PromptCreate | null;
   completion_model?: ModelId | null;
   completion_model_kwargs?: ModelKwargs | null;
+  transcription_model?: ModelId | null;
 }
 
 /** PartialAssistantUpdatePublic */
@@ -2368,10 +2761,18 @@ export interface PartialAssistantUpdatePublic {
   groups?: ModelId[] | null;
   /** Websites */
   websites?: ModelId[] | null;
+  /** Integration Knowledge List */
+  integration_knowledge_list?: ModelId[] | null;
   guardrail?: AssistantGuard | null;
   completion_model?: ModelId | null;
   /** Attachments */
   attachments?: ModelId[] | null;
+  /**
+   * Description
+   * A description of the assitant that will be used as default description in GroupChatAssistantPublic
+   * @example "This is a helpful AI assistant"
+   */
+  description?: string | null;
 }
 
 /** PartialGroupUpdatePublic */
@@ -2412,6 +2813,8 @@ export interface PartialUpdateSpaceRequest {
   embedding_models?: ModelId[] | null;
   /** Completion Models */
   completion_models?: ModelId[] | null;
+  /** Transcription Models */
+  transcription_models?: ModelId[] | null;
 }
 
 /** PartialWebsiteUpdateRequest */
@@ -2432,6 +2835,7 @@ export interface PartialWebsiteUpdateRequest {
 /** Permission */
 export enum Permission {
   Assistants = 'assistants',
+  GroupChats = 'group_chats',
   Apps = 'apps',
   Services = 'services',
   Collections = 'collections',
@@ -2440,6 +2844,7 @@ export enum Permission {
   Editor = 'editor',
   Admin = 'admin',
   Websites = 'websites',
+  IntegrationKnowledgeList = 'integration_knowledge_list',
 }
 
 /** PermissionPublic */
@@ -2580,11 +2985,8 @@ export interface QuestionMetadata {
    * @format date-time
    */
   created_at: string;
-  /**
-   * Assistant Id
-   * @format uuid
-   */
-  assistant_id: string;
+  /** Assistant Id */
+  assistant_id?: string | null;
   /**
    * Session Id
    * @format uuid
@@ -2864,11 +3266,10 @@ export interface SessionMetadata {
    * @format date-time
    */
   created_at: string;
-  /**
-   * Assistant Id
-   * @format uuid
-   */
-  assistant_id: string;
+  /** Assistant Id */
+  assistant_id?: string | null;
+  /** Group Chat Id */
+  group_chat_id?: string | null;
 }
 
 /** SessionMetadataPublic */
@@ -2925,6 +3326,25 @@ export interface SignUpRequest {
    * @format email
    */
   user_email: string;
+}
+
+/** SignedURLRequest */
+export interface SignedURLRequest {
+  /**
+   * Expires In
+   * @default 3600
+   */
+  expires_in?: number;
+  /** @default "attachment" */
+  content_disposition?: ContentDisposition;
+}
+
+/** SignedURLResponse */
+export interface SignedURLResponse {
+  /** Url */
+  url: string;
+  /** Expires At */
+  expires_at: number;
 }
 
 /** SpaceDashboard */
@@ -3000,6 +3420,8 @@ export interface SpacePublic {
   embedding_models: EmbeddingModelSparse[];
   /** Completion Models */
   completion_models: CompletionModelSparse[];
+  /** Transcription Models */
+  transcription_models: TranscriptionModelPublic[];
   knowledge: Knowledge;
   members: PaginatedPermissionsSpaceMember;
   default_assistant: DefaultAssistant;
@@ -3130,6 +3552,7 @@ export enum Task {
   EmbedGroup = 'embed_group',
   CrawlAllWebsites = 'crawl_all_websites',
   RunApp = 'run_app',
+  PullConfluenceContent = 'pull_confluence_content',
 }
 
 /** TemplateCreate */
@@ -3185,6 +3608,8 @@ export interface TenantBase {
    * @default false
    */
   provisioning?: boolean;
+  /** @default "active" */
+  state?: TenantState;
 }
 
 /** TenantInDB */
@@ -3215,6 +3640,8 @@ export interface TenantInDB {
    * @default false
    */
   provisioning?: boolean;
+  /** @default "active" */
+  state?: TenantState;
   /**
    * Modules
    * @default []
@@ -3230,6 +3657,8 @@ export interface TenantIntegration {
   name: string;
   /** Description */
   description: string;
+  /** Integration Type */
+  integration_type: string;
   /**
    * Integration Id
    * @format uuid
@@ -3274,8 +3703,16 @@ export interface TenantPublic {
    * @default false
    */
   provisioning?: boolean;
+  /** @default "active" */
+  state?: TenantState;
   /** Privacy Policy */
   privacy_policy?: string | null;
+}
+
+/** TenantState */
+export enum TenantState {
+  Active = 'active',
+  Suspended = 'suspended',
 }
 
 /** TenantUpdatePublic */
@@ -3290,6 +3727,7 @@ export interface TenantUpdatePublic {
   zitadel_org_id?: string | null;
   /** Provisioning */
   provisioning?: boolean | null;
+  state?: TenantState | null;
 }
 
 /** ToolAssistant */
@@ -3299,14 +3737,77 @@ export interface ToolAssistant {
    * @format uuid
    */
   id: string;
-  /** At-Tag */
-  'at-tag': string;
+  /** Handle */
+  handle: string;
 }
 
 /** Tools */
 export interface Tools {
   /** Assistants */
   assistants: ToolAssistant[];
+}
+
+/** TranscriptionModelPublic */
+export interface TranscriptionModelPublic {
+  /** Name */
+  name: string;
+  /** Nickname */
+  nickname: string;
+  family: ModelFamily;
+  /** Is Deprecated */
+  is_deprecated: boolean;
+  stability: ModelStability;
+  hosting: ModelHostingLocation;
+  /** Open Source */
+  open_source?: boolean | null;
+  /** Description */
+  description?: string | null;
+  /** Hf Link */
+  hf_link?: string | null;
+  org?: ModelOrg | null;
+  /**
+   * Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * Updated At
+   * @format date-time
+   */
+  updated_at: string;
+  /**
+   * Is Org Enabled
+   * @default false
+   */
+  is_org_enabled?: boolean;
+  /**
+   * Is Org Default
+   * @default false
+   */
+  is_org_default?: boolean;
+  /**
+   * Can Access
+   * @default false
+   */
+  can_access?: boolean;
+  /**
+   * Is Locked
+   * @default true
+   */
+  is_locked?: boolean;
+}
+
+/** TranscriptionModelUpdateFlags */
+export interface TranscriptionModelUpdateFlags {
+  /** Is Org Enabled */
+  is_org_enabled?: boolean | null;
+  /** Is Org Default */
+  is_org_default?: boolean | null;
 }
 
 /** TransferApplicationRequest */
@@ -3729,6 +4230,8 @@ export interface UserIntegration {
   name: string;
   /** Description */
   description: string;
+  /** Integration Type */
+  integration_type: string;
   /**
    * Tenant Integration Id
    * @format uuid
@@ -4001,16 +4504,6 @@ export interface WsAppRunUpdate {
   app_id?: string | null;
   /** @default null */
   space?: null;
-}
-
-/** Type */
-export enum AppTemplatePublicTypeEnum {
-  App = 'app',
-}
-
-/** Type */
-export enum AssistantTemplatePublicTypeEnum {
-  Assistant = 'assistant',
 }
 
 export enum CreateSpaceServiceResponseOutputFormatEnum {
