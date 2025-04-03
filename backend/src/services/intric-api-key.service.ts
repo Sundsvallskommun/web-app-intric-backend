@@ -17,7 +17,9 @@ import { Request } from 'express';
 import prisma from '../utils/prisma';
 
 export const getApiKey = async (req: Request) => {
-  if (req.headers?.['_apikey']) {
+  //NOTE: We should not need to check for the 'undefined' string, but older versions of frontend with this bug is still in production.
+  //This will allow the old version to continue to work without updating every app.
+  if (req.headers?.['_apikey'] && req.headers?.['_apikey'] !== 'undefined') {
     return req.headers['_apikey'];
   }
 
