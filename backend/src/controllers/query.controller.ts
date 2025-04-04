@@ -30,8 +30,8 @@ export class QueryController {
     const apiKey = await getApiKey(req);
     const responseType = 'stream';
     const data: AskAssistant = {
-      ...body,
       question: query,
+      files: body.files,
       stream,
     };
     const res = await this.intricApiService.post<Stream, AskAssistant>({ url, headers: { 'api-key': apiKey }, responseType, data });
@@ -67,8 +67,8 @@ export class QueryController {
     const apiKey = await getApiKey(req);
     const responseType = 'stream';
     const data: AskAssistant = {
-      ...body,
-      question: body.body,
+      question: query,
+      files: body.files,
       stream,
     };
     const res = await this.intricApiService.post<Stream, AskAssistant>({ url, headers: { 'api-key': apiKey }, responseType, data });
