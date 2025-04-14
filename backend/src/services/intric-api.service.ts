@@ -1,9 +1,8 @@
 import { HttpException } from '@/exceptions/HttpException';
 import { logger } from '@/utils/logger';
 import { intricApiURL } from '@/utils/util';
-import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-import ApiTokenService from './api-token.service';
-import IntricApiTokenService from './intric-api-token.service';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import FormData from 'form-data';
 
 class IntricApiResponse<T> {
   data: T;
@@ -13,10 +12,8 @@ class IntricApiResponse<T> {
 class IntricApiService {
   public formDataFromMulterFile = (file: Express.Multer.File, fieldName: string) => {
     const data = new FormData();
-    const theBlob = new Blob([file.buffer], { type: file.mimetype });
-    const theFile = new File([theBlob], file.originalname, { type: file.mimetype });
 
-    data.append(fieldName, theFile, file.originalname);
+    data.append(fieldName, file.buffer, file.originalname);
     return data;
   };
 
