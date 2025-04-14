@@ -10,15 +10,18 @@ class IntricApiResponse<T> {
   message: string;
 }
 
-
 class IntricApiService {
-  // private apiTokenService = new ApiTokenService();
-  // private intricApiTokenService = new IntricApiTokenService();
-  private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
-    // const token = await this.intricApiTokenService.getToken();
+  public formDataFromMulterFile = (file: Express.Multer.File, fieldName: string) => {
+    const data = new FormData();
+    const theBlob = new Blob([file.buffer], { type: file.mimetype });
+    const theFile = new File([theBlob], file.originalname, { type: file.mimetype });
 
+    data.append(fieldName, theFile, file.originalname);
+    return data;
+  };
+
+  private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     const defaultHeaders = {
-      // Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
     const defaultParams = {};
@@ -39,7 +42,7 @@ class IntricApiService {
       }
       // NOTE: did you subscribe to the API called?
       const response = (error as AxiosError).response;
-      console.log("RESPONSE: ", response);
+      console.log('RESPONSE: ', response);
       logger.error('Error:', (error as AxiosError).message);
       throw new HttpException(response.status, `Intric: ${(response.data as any)?.message}`);
     }

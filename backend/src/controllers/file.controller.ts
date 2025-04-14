@@ -48,11 +48,7 @@ export class FileController {
     @UploadedFile('upload_file', { options: fileUploadOptions, required: true }) file: Express.Multer.File,
     @Res() response: Response<FilePublic>,
   ): Promise<Response<FilePublic>> {
-    const formData = new FormData();
-    const blob = new Blob([file.buffer], { type: file.mimetype });
-    const upload_file = new File([blob], file.originalname, { type: file.mimetype });
-
-    formData.append('upload_file', upload_file, file.originalname);
+    const data = this.intricApiService.formDataFromMulterFile(file, 'upload_file');
 
     try {
       const url = '/files/';
@@ -60,7 +56,7 @@ export class FileController {
       const res = await this.intricApiService.post<FilePublic, any>({
         url,
         headers: { 'api-key': apiKey, Accept: 'multipart/form-data', 'Content-Type': 'multipart/form-data' },
-        data: formData,
+        data,
       });
       return response.send(res.data);
     } catch (e) {
