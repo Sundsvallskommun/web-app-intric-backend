@@ -1,24 +1,24 @@
 import { HttpException } from '@/exceptions/HttpException';
 import { logger } from '@/utils/logger';
 import { intricApiURL } from '@/utils/util';
-import axios, { AxiosError, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-import ApiTokenService from './api-token.service';
-import IntricApiTokenService from './intric-api-token.service';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import FormData from 'form-data';
 
 class IntricApiResponse<T> {
   data: T;
   message: string;
 }
 
-
 class IntricApiService {
-  // private apiTokenService = new ApiTokenService();
-  // private intricApiTokenService = new IntricApiTokenService();
-  private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
-    // const token = await this.intricApiTokenService.getToken();
+  public formDataFromMulterFile = (file: Express.Multer.File, fieldName: string) => {
+    const data = new FormData();
 
+    data.append(fieldName, file.buffer, file.originalname);
+    return data;
+  };
+
+  private async request<T>(config: AxiosRequestConfig): Promise<IntricApiResponse<T>> {
     const defaultHeaders = {
-      // Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
     const defaultParams = {};
@@ -39,7 +39,7 @@ class IntricApiService {
       }
       // NOTE: did you subscribe to the API called?
       const response = (error as AxiosError).response;
-      console.log("RESPONSE: ", response);
+      console.log('RESPONSE: ', response);
       logger.error('Error:', (error as AxiosError).message);
       throw new HttpException(response.status, `Intric: ${(response.data as any)?.message}`);
     }
