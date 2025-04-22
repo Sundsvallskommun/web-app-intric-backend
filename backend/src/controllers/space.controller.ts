@@ -1,11 +1,17 @@
-import { Applications, PaginatedResponseSpaceSparse, SpacePublic } from '@/data-contracts/intric/data-contracts';
+import {
+  Applications,
+  AssistantPublic,
+  CreateSpaceAssistantRequest,
+  PaginatedResponseSpaceSparse,
+  SpacePublic,
+} from '@/data-contracts/intric/data-contracts';
 import applicationModeMiddleware from '@/middlewares/application-mode.middleware';
 import hashMiddleware from '@/middlewares/hash.middleware';
 import { getApiKey } from '@/services/intric-api-key.service';
 import IntricApiService from '@/services/intric-api.service';
 import { logger } from '@/utils/logger';
-import { Request } from 'express';
-import { Controller, Get, Param, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
+import { Request, Response, response } from 'express';
+import { Body, Controller, Get, Param, Post, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
 
 @UseBefore(applicationModeMiddleware)
 @Controller()
@@ -80,6 +86,25 @@ export class SpaceController {
       return res.data;
     } catch (e) {
       logger.error('Error getting applications from space', e);
+    }
+  }
+
+  @Post('/spaces/:id/applications/assistants')
+  @UseBefore(hashMiddleware)
+  async create_space_assistant(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: CreateSpaceAssistantRequest,
+    @Res() response: Response<AssistantPublic>,
+  ): Promise<Response<AssistantPublic>> {
+    try {
+      const url = `/spaces/${id}/applications/assistants`;
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.post<AssistantPublic, CreateSpaceAssistantRequest>({ url, headers: { 'api-key': apiKey }, data: body });
+
+      return response.send(res.data);
+    } catch (e) {
+      logger.error('Error saving assistant to space', e);
     }
   }
 }
