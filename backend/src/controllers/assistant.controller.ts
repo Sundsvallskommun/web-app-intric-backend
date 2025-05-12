@@ -11,8 +11,8 @@ import hashMiddleware from '@/middlewares/hash.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
 import { getApiKey } from '@/services/intric-api-key.service';
 import IntricApiService from '@/services/intric-api.service';
-import { Request } from 'express';
-import { Body, Controller, Delete, Get, Param, Post, Req, UseBefore } from 'routing-controllers';
+import { Request, Response } from 'express';
+import { Body, Controller, Delete, Get, HttpError, Param, Post, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
 
 @UseBefore(applicationModeMiddleware)
 @Controller()
@@ -25,6 +25,37 @@ export class AssistantController {
     const apiKey = await getApiKey(req);
     const res = await this.intricApiService.get<PaginatedResponseAssistantPublic>({ url, headers: { 'api-key': apiKey } });
     return res.data;
+  }
+
+  @Get('/assistants/batch')
+  @UseBefore(hashMiddleware)
+  async batch_get_assistants_by_id(
+    @Req() req,
+    @QueryParam('id', { required: true, isArray: true }) ids: string[],
+    @Res() response: Response<PaginatedResponseAssistantPublic>,
+  ): Promise<Response<PaginatedResponseAssistantPublic>> {
+    const url = `/assistants/`;
+    const apiKey = await getApiKey(req);
+    const items: AssistantPublic[] = [];
+    if (!ids || ids.length === 0) {
+      throw new HttpError(400, 'No ids provided');
+    }
+    for (let index = 0; index < ids.length; index++) {
+      try {
+        const res = await this.intricApiService.get<AssistantPublic>({ url: `${url}${ids[index]}`, headers: { 'api-key': apiKey } });
+        if (res) {
+          items.push(res.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    if (items.length === 0) {
+      throw new HttpError(404, 'No assistants found');
+    }
+
+    return response.send({ count: items.length, items });
   }
 
   @Get('/assistants/:id')
