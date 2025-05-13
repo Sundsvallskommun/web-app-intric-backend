@@ -165,7 +165,7 @@ class App {
 
   private initializeMiddlewares() {
     this.app.use(morgan(LOG_FORMAT, { stream }));
-    this.app.use(hpp());
+    this.app.use(hpp({ whitelist: ['id'] }));
     this.app.use(helmet());
     this.app.use(compression());
     this.app.use(express.json());
