@@ -8,7 +8,7 @@ import {
 import { ModelKwargs } from '@/responses/intric/common';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class NewPrompt implements PromptCreate {
   @IsString()

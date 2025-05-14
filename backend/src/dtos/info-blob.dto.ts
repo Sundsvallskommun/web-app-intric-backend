@@ -1,18 +1,20 @@
 import { InfoBlobAddPublic, InfoBlobMetadataUpsertPublic, InfoBlobUpdatePublic, InfoBlobUpsertRequest } from '@/data-contracts/intric/data-contracts';
+import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class InfoBlobMetadata implements InfoBlobMetadataUpsertPublic {
+  @IsOptional()
+  @IsNullable()
   @IsString()
-  url: string;
+  url?: string | null;
+  @IsOptional()
+  @IsNullable()
   @IsString()
-  title: string;
+  title?: string | null;
 }
 
 export class UpdateInfoBlobDto implements InfoBlobUpdatePublic {
-  @IsString()
-  @IsOptional()
-  text?: string;
   @IsOptional()
   @ValidateNested()
   @Type(() => InfoBlobMetadata)
