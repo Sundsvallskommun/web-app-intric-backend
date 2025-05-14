@@ -16,7 +16,7 @@ import IntricApiService from '@/services/intric-api.service';
 import { logger } from '@/utils/logger';
 import { Request, Response } from 'express';
 import { Body, Controller, Delete, Get, HttpError, Param, Post, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 
 @UseBefore(applicationModeMiddleware)
 @Controller()
@@ -24,6 +24,9 @@ export class AssistantController {
   private intricApiService = new IntricApiService();
 
   @Get('/assistants')
+  @OpenAPI({
+    summary: 'Get assitants from Intric',
+  })
   @ResponseSchema(PaginatedResponseAssistantPublic)
   @UseBefore(hashMiddleware)
   async get_assistants(
@@ -42,6 +45,9 @@ export class AssistantController {
   }
 
   @Get('/assistants/batch')
+  @OpenAPI({
+    summary: 'Batch get assitants from Intric',
+  })
   @UseBefore(hashMiddleware)
   @ResponseSchema(PaginatedResponseAssistantPublic)
   async batch_get_assistants_by_id(
@@ -74,6 +80,9 @@ export class AssistantController {
   }
 
   @Get('/assistants/:id')
+  @OpenAPI({
+    summary: 'Get assitant from Intric',
+  })
   @UseBefore(hashMiddleware)
   @ResponseSchema(AssistantPublic)
   async get_assistant_by_id(
@@ -93,6 +102,9 @@ export class AssistantController {
   }
 
   @Post('/assistants/:id')
+  @OpenAPI({
+    summary: 'Update Intric assistant',
+  })
   @UseBefore(hashMiddleware)
   @UseBefore(validationMiddleware(UpdateAssistantDto, 'body'))
   @ResponseSchema(AssistantPublic)
@@ -118,6 +130,9 @@ export class AssistantController {
   }
 
   @Delete('/assistants/:id')
+  @OpenAPI({
+    summary: 'Delete Intric assistant',
+  })
   @UseBefore(hashMiddleware)
   async delete_assistant(@Req() req: Request, @Param('id') id: string, @Res() response: Response): Promise<Response> {
     const url = `/assistants/${id}/`;
@@ -132,6 +147,9 @@ export class AssistantController {
   }
 
   @Get('/assistants/:id/sessions')
+  @OpenAPI({
+    summary: 'Get sessions from Intric assistant',
+  })
   @UseBefore(hashMiddleware)
   @ResponseSchema(CursorPaginatedResponseSessionMetadataPublic)
   async get_assistant_sessions(
@@ -151,6 +169,9 @@ export class AssistantController {
   }
 
   @Get('/assistants/:id/sessions/:session_id')
+  @OpenAPI({
+    summary: 'Get session from Intric assistant',
+  })
   @UseBefore(hashMiddleware)
   @ResponseSchema(SessionPublic)
   async get_assistant_session(
