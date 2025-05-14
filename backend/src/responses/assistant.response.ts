@@ -3,10 +3,9 @@ import { Assistant as AssistantType } from '../interfaces/assistant.interface';
 import { Type } from 'class-transformer';
 import ApiResponse from '../interfaces/api-service.interface';
 
-
 export class Assistant implements AssistantType {
   @IsString()
-  app:string;
+  app: string;
   @IsString()
   assistantId: string;
   @IsString()
@@ -15,7 +14,7 @@ export class Assistant implements AssistantType {
 
 export class UpdateAssistant implements AssistantType {
   @IsString()
-  app:string;
+  app: string;
   @IsString()
   assistantId: string;
   @IsString()
@@ -24,7 +23,7 @@ export class UpdateAssistant implements AssistantType {
 }
 
 export class AssistantsApiResponse implements ApiResponse<AssistantType[]> {
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => Assistant)
   data: Assistant[];
   @IsString()
