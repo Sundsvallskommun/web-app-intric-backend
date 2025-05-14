@@ -1,10 +1,11 @@
 import {
   AssistantGuard as AssistantGuardType,
-  ModelId as ModelIdType,
-  ModelKwargs,
+  ModelId as ModelIdInterface,
+  ModelKwargs as ModelKwargsInterface,
   PartialAssistantUpdatePublic,
   PromptCreate,
 } from '@/data-contracts/intric/data-contracts';
+import { ModelKwargs } from '@/responses/intric/common';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
@@ -18,20 +19,9 @@ export class NewPrompt implements PromptCreate {
   description?: string | null;
 }
 
-export class ModelId implements ModelIdType {
+export class ModelId implements ModelIdInterface {
   @IsString()
   id: string;
-}
-
-export class CompletionModelKwargs implements ModelKwargs {
-  @IsNumber()
-  @IsOptional()
-  @IsNullable()
-  temperature?: number | null;
-  @IsNumber()
-  @IsOptional()
-  @IsNullable()
-  top_p?: number | null;
 }
 
 export class AssistantGuard implements AssistantGuardType {
@@ -57,21 +47,22 @@ export class UpdateAssistantDto implements PartialAssistantUpdatePublic {
   @IsNullable()
   @IsOptional()
   @Type(() => ModelId)
-  completion_model: ModelIdType;
+  completion_model: ModelIdInterface;
   @IsOptional()
   @IsNullable()
-  @Type(() => CompletionModelKwargs)
-  completion_model_kwargs?: ModelKwargs | null;
+  @ValidateNested()
+  @Type(() => ModelKwargs)
+  completion_model_kwargs?: ModelKwargsInterface | null;
   @Type(() => ModelId)
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNullable()
-  groups?: ModelIdType[] | null;
+  groups?: ModelIdInterface[] | null;
   @Type(() => ModelId)
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNullable()
-  websites?: ModelIdType[] | null;
+  websites?: ModelIdInterface[] | null;
   @IsBoolean()
   @IsOptional()
   @IsNullable()
@@ -88,7 +79,7 @@ export class UpdateAssistantDto implements PartialAssistantUpdatePublic {
   @IsNullable()
   @Type(() => ModelId)
   @ValidateNested({ each: true })
-  attachments?: ModelIdType[] | null;
+  attachments?: ModelIdInterface[] | null;
   @IsOptional()
   @IsNullable()
   @IsString()
