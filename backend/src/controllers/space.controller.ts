@@ -1,0 +1,142 @@
+import {
+  Applications,
+  AssistantPublic,
+  CreateSpaceAssistantRequest,
+  PaginatedResponseSpaceSparse,
+  SpacePublic,
+} from '@/data-contracts/intric/data-contracts';
+import applicationModeMiddleware from '@/middlewares/application-mode.middleware';
+import hashMiddleware from '@/middlewares/hash.middleware';
+import { getApiKey } from '@/services/intric-api-key.service';
+import IntricApiService from '@/services/intric-api.service';
+import { logger } from '@/utils/logger';
+import { Request, Response } from 'express';
+import { Body, Controller, Get, HttpError, Param, Post, QueryParam, Req, Res, UseBefore } from 'routing-controllers';
+
+@UseBefore(applicationModeMiddleware)
+@Controller()
+export class SpaceController {
+  private intricApiService = new IntricApiService();
+
+  @Get('/spaces')
+  @UseBefore(hashMiddleware)
+  async get_user_spaces(@Req() req: Request, @QueryParam('personal') personal: boolean, @Res() response: any): Promise<PaginatedResponseSpaceSparse> {
+    try {
+      const url = '/spaces/';
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.get<PaginatedResponseSpaceSparse>({ url, headers: { 'api-key': apiKey } });
+      if (personal) {
+        try {
+          const personal_url = '/spaces/type/personal/';
+          const personal = await this.intricApiService.get<SpacePublic>({ url: personal_url, headers: { 'api-key': apiKey } });
+          const personalSpace = { ...personal.data };
+          delete personalSpace.applications;
+          delete personalSpace.embedding_models;
+          delete personalSpace.completion_models;
+          delete personalSpace.knowledge;
+
+          return { ...res.data, count: res.data.count + 1, items: [personalSpace, ...res.data.items] };
+        } catch {
+          console.log('No personal space');
+        }
+      }
+      return res.data;
+    } catch (e) {
+      console.error('Error getting spaces', e);
+      logger.error('Error getting spaces', e);
+    }
+  }
+
+  @Get('/spaces/personal')
+  @UseBefore(hashMiddleware)
+  async get_personal_space(@Req() req: Request, @Res() response: any): Promise<SpacePublic> {
+    try {
+      const url = `/spaces/type/personal/`;
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.get<SpacePublic>({ url, headers: { 'api-key': apiKey } });
+
+      return res.data;
+    } catch (e) {
+      logger.error('Error getting space', e);
+    }
+  }
+
+  @Get('/spaces/batch')
+  @UseBefore(hashMiddleware)
+  async batch_get_spaces(
+    @Req() req: Request,
+    @QueryParam('id', { isArray: true, required: true }) ids: Array<string>,
+    @Res() response: Response<SpacePublic[]>,
+  ): Promise<Response<SpacePublic[]>> {
+    const url = `/spaces/`;
+    const spaces: SpacePublic[] = [];
+    const apiKey = await getApiKey(req);
+    if (!ids || ids?.length === 0) {
+      throw new HttpError(400, 'No ids provided');
+    }
+
+    for (let index = 0; index < ids.length; index++) {
+      try {
+        const res = await this.intricApiService.get<SpacePublic>({ url: `${url}${ids[index]}`, headers: { 'api-key': apiKey } });
+        if (res) {
+          spaces.push(res.data);
+        }
+      } catch (e) {
+        logger.error('Error getting space', e);
+      }
+    }
+
+    if (spaces.length === 0) {
+      throw new HttpError(404, 'No spaces found');
+    }
+
+    return response.send(spaces);
+  }
+
+  @Get('/spaces/:id')
+  @UseBefore(hashMiddleware)
+  async get_single_space(@Req() req: Request, @Param('id') id: string, @Res() response: any): Promise<SpacePublic> {
+    try {
+      const url = `/spaces/${id}`;
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.get<SpacePublic>({ url, headers: { 'api-key': apiKey } });
+
+      return res.data;
+    } catch (e) {
+      logger.error('Error getting space', e);
+    }
+  }
+
+  @Get('/spaces/:id/applications')
+  @UseBefore(hashMiddleware)
+  async get_single_space_applications(@Req() req: Request, @Param('id') id: string, @Res() response: any): Promise<Applications> {
+    try {
+      const url = `/spaces/${id}/applications`;
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.get<Applications>({ url, headers: { 'api-key': apiKey } });
+
+      return res.data;
+    } catch (e) {
+      logger.error('Error getting applications from space', e);
+    }
+  }
+
+  @Post('/spaces/:id/applications/assistants')
+  @UseBefore(hashMiddleware)
+  async create_space_assistant(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: CreateSpaceAssistantRequest,
+    @Res() response: Response<AssistantPublic>,
+  ): Promise<Response<AssistantPublic>> {
+    try {
+      const url = `/spaces/${id}/applications/assistants`;
+      const apiKey = await getApiKey(req);
+      const res = await this.intricApiService.post<AssistantPublic, CreateSpaceAssistantRequest>({ url, headers: { 'api-key': apiKey }, data: body });
+
+      return response.send(res.data);
+    } catch (e) {
+      logger.error('Error saving assistant to space', e);
+    }
+  }
+}

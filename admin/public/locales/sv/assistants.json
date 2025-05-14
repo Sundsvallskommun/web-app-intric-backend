@@ -1,0 +1,22 @@
+{
+  "name_zero": "assistenter",
+  "name_one": "assistent",
+  "name_many": "assistenter",
+  "name_other": "assistenter",
+  "new-apiKey": "Byt api-nyckel",
+  "generate-apiKey": "Skapa api-nyckel (read-only)",
+  "properties": {
+    "app": "Applikationsnamn",
+    "assistantId": "Assistent-id",
+    "apiKey": "api-nyckel"
+  },
+  "error": {
+    "apiKey": {
+      "assistantId": "Du måste fylla i ett assistent-id först",
+      "apiKey": "Du måste fylla i en personlig api-nyckel först",
+      "forbidden": "Kontrollera dina rättigheter i Intric",
+      "unauthorized": "Ogiltiga rättigheter. Kontrollera din api-nyckel",
+      "servererror": "Något gick fel. Försök igen senare"
+    }
+  }
+}

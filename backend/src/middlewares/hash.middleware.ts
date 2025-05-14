@@ -7,9 +7,14 @@ const hashMiddleware = async (req: Request, res: Response, next: NextFunction) =
   const assistant_id = req.headers['_skassistant'] ? (req.headers['_skassistant'] as string) : '';
   const app = req.headers['_skapp'] ? (req.headers['_skapp'] as string) : '';
   const hash = req.headers['_skhash'] ? (req.headers['_skhash'] as string) : '';
-  console.log({ user, assistant_id, app, hash });
+  const apikey = req.headers['_apikey'] ? (req.headers['_apikey'] as string) : '';
+  if (!apikey) {
+    console.log({ user, assistant_id, app, hash });
+  }
   try {
-    if (verifyHash(user, assistant_id, app, hash)) {
+    if (apikey) {
+      next();
+    } else if (verifyHash(user, assistant_id, app, hash)) {
       next();
     } else {
       next(new HttpException(401, 'Not Authorized'));

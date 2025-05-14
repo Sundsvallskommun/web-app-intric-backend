@@ -18,19 +18,20 @@ export class QueryController {
     @Req() req: any,
     @Param('assistant_id') assistant_id: string,
     @QueryParam('stream') stream: boolean,
-    @Body() body,
+    @Body() body: Pick<AskAssistant, 'question' | 'files'> & { body?: string },
     @Res() response: ServerResponse,
   ): Promise<any> {
-    if (!body?.body || body?.body === '') {
+    //NOTE: Added same type as Intric, but kept the old type for backwards compatibility
+    const query = body?.question ?? body?.body;
+    if (!query || query === '') {
       throw new HttpException(400, 'Empty body');
     }
-    const query = body?.body;
-    console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/`;
-    const apiKey = getApiKey(req);
+    const apiKey = await getApiKey(req);
     const responseType = 'stream';
     const data: AskAssistant = {
-      question: body.body,
+      question: query,
+      files: body.files,
       stream,
     };
     const res = await this.intricApiService.post<Stream, AskAssistant>({ url, headers: { 'api-key': apiKey }, responseType, data });
@@ -54,19 +55,20 @@ export class QueryController {
     @Param('assistant_id') assistant_id: string,
     @Param('session_id') session_id: string,
     @QueryParam('stream') stream: boolean,
-    @Body() body,
+    @Body() body: Pick<AskAssistant, 'question' | 'files'> & { body?: string },
     @Res() response: ServerResponse,
   ): Promise<any> {
-    if (!body?.body || body?.body === '') {
-      throw new HttpError(400, 'Empty body');
+    //NOTE: Added same type as Intric, but kept the old type for backwards compatibility
+    const query = body?.question ?? body?.body;
+    if (!query || query === '') {
+      throw new HttpException(400, 'Empty body');
     }
-    const query = body?.body;
-    console.log({ query });
     const url = `/assistants/${assistant_id}/sessions/${session_id}/`;
-    const apiKey = getApiKey(req);
+    const apiKey = await getApiKey(req);
     const responseType = 'stream';
     const data: AskAssistant = {
-      question: body.body,
+      question: query,
+      files: body.files,
       stream,
     };
     const res = await this.intricApiService.post<Stream, AskAssistant>({ url, headers: { 'api-key': apiKey }, responseType, data });
@@ -91,15 +93,12 @@ export class QueryController {
     @Param('session_id') session_id: string,
     @Body() body: Feedback,
   ): Promise<any> {
-    console.log('Feedback body: ', body);
     if (!body || !body?.value) {
       throw new HttpError(400, 'Empty body');
     }
     const url = `/assistants/${assistant_id}/sessions/${session_id}/feedback/`;
-    const apiKey = getApiKey(req);
-    console.log('posting body: ', body);
+    const apiKey = await getApiKey(req);
     const res = await this.intricApiService.post<SessionPublic, Feedback>({ url, headers: { 'api-key': apiKey }, data: body });
-    console.log('Feedback response: ', res.data);
     return res.data;
   }
 }

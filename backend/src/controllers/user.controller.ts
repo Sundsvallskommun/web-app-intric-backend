@@ -1,29 +1,22 @@
-import { Controller, Body, Req, Get, Post, UseBefore, Res, Patch } from 'routing-controllers';
-import { OpenAPI } from 'routing-controllers-openapi';
-import authMiddleware from '@middlewares/auth.middleware';
-import { RequestWithUser } from '@/interfaces/auth.interface';
-import { HttpException } from '@/exceptions/HttpException';
-import { PrismaClient } from '@prisma/client'
+import { UserPublic } from '@/data-contracts/intric/data-contracts';
+import applicationModeMiddleware from '@/middlewares/application-mode.middleware';
+import hashMiddleware from '@/middlewares/hash.middleware';
+import { getApiKey } from '@/services/intric-api-key.service';
+import IntricApiService from '@/services/intric-api.service';
+import { Controller, Get, Req, Res, UseBefore } from 'routing-controllers';
+import { Request } from 'express';
 
-const prisma = new PrismaClient();
-
-interface UserData {
-  name: string;
-}
-
+@UseBefore(applicationModeMiddleware)
 @Controller()
 export class UserController {
-  // @Get('/me')
-  // @OpenAPI({ summary: 'Return current user' })
-  // @UseBefore(authMiddleware)
-  // async getUser(@Req() req: RequestWithUser, @Res() response: any): Promise<UserData> {
-  //   const { name } = req.user;
-  //   if (!name) {
-  //     throw new HttpException(400, 'Bad Request');
-  //   }
-  //   const userData: UserData = {
-  //     name: name,
-  //   };
-  //   return response.send({ data: userData, message: 'success' });
-  // }
+  private intricApiService = new IntricApiService();
+
+  @Get('/users/me')
+  @UseBefore(hashMiddleware)
+  async get_me(@Req() req: Request, @Res() response: any): Promise<UserPublic> {
+    const url = '/users/me';
+    const apiKey = await getApiKey(req);
+    const res = await this.intricApiService.get<UserPublic>({ url, headers: { 'api-key': apiKey } });
+    return res.data;
+  }
 }

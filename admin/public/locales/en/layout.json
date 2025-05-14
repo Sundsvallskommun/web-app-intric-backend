@@ -1,0 +1,12 @@
+{
+  "header": {
+    "goto_content": "Go to content"
+  },
+  "color_scheme": "color scheme",
+  "color_schemes": {
+    "dark": "dark mode",
+    "light": "light mode",
+    "system": "follow system mode"
+  },
+  "settings": "settings"
+}

@@ -1,0 +1,14 @@
+{
+  "name_zero": "värdar",
+  "name_one": "värd",
+  "name_many": "värdar",
+  "name_other": "värdar",
+  "properties": {
+    "host": "url"
+  },
+  "error": {
+    "apiKey": {
+      "host": "Du måste fylla i en url"
+    }
+  }
+}

@@ -1,25 +1,37 @@
 import App from '@/app';
 import { IndexController } from '@controllers/index.controller';
 import validateEnv from '@utils/validateEnv';
-import { UserController } from './controllers/user.controller';
-import { HealthController } from './controllers/health.controller';
+import { AdminApiKeyController } from './controllers/admin/apikey.controller';
+import { AdminAsisstantController } from './controllers/admin/assistant.controller';
+import { AdminUserController } from './controllers/admin/user.controller';
 import { AssistantController } from './controllers/assistant.controller';
+import { AzureController } from './controllers/azure.controller';
 import { GroupController } from './controllers/group.controller';
+import { HealthController } from './controllers/health.controller';
 import { InfoBlobController } from './controllers/info-blob.controller';
 import { QueryController } from './controllers/query.controller';
-import { AzureControlller } from './controllers/azure.controller';
+import { AdminHostsController } from './controllers/admin/hosts.controller';
+import { SpaceController } from './controllers/space.controller';
+import { UserController } from './controllers/user.controller';
+import { FileController } from './controllers/file.controller';
 
 validateEnv();
 
 const app = new App([
-  AzureControlller,
+  AzureController,
   IndexController,
-  UserController,
   HealthController,
   AssistantController,
   GroupController,
   InfoBlobController,
   QueryController,
+  AdminAsisstantController,
+  AdminUserController,
+  AdminApiKeyController,
+  AdminHostsController,
+  SpaceController,
+  UserController,
+  FileController,
 ]);
 
 app.listen();
