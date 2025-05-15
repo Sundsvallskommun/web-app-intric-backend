@@ -1,28 +1,14 @@
 import {
-  ToolAssistant as ToolAssistantInterface,
-  UseTools as UseToolsInterface,
   ModelKwargs as ModelKwargsInterface,
-  ModelFamily,
-  ModelStability,
-  ModelHostingLocation,
-  ModelOrg,
-  CompletionModel as CompletionModelInterface,
-  CompletionModelSparse as CompletionModelSparseInterface,
   PaginatedPermissionsAppSparse,
   ResourcePermission,
   SecurityClassificationPublic as SecurityClassificationPublicInterface,
-  EmbeddingModelPublic as EmbeddingModelPublicInterface,
-  CompletionModelPublic as CompletionModelPublicInterface,
-  TranscriptionModelPublic as TranscriptionModelPublicInterface,
-  Knowledge as KnowledgeInterface,
-  PaginatedPermissionsCollectionPublic as PaginatedPermissionsCollectionPublicInterface,
-  PaginatedPermissionsWebsitePublic as PaginatedPermissionsWebsitePublicInterface,
+  ToolAssistant as ToolAssistantInterface,
+  UseTools as UseToolsInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { PaginatedPermissionsCollectionPublic } from './group.response';
-import { PaginatedPermissionsWebsitePublic } from './website.response';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class DatesAndId {
   @IsString()
@@ -80,5 +66,4 @@ export class SecurityClassificationPublic extends DatesAndId implements Security
   security_level: number;
 }
 
-export { DatesAndId, UseTools, ModelKwargs };
-export type { UseToolsInterface, ModelKwargsInterface, SecurityClassificationPublicInterface };
+export type { ModelKwargsInterface, SecurityClassificationPublicInterface, UseToolsInterface };
