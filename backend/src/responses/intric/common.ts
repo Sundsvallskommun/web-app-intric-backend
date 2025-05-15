@@ -1,17 +1,14 @@
 import {
+  ModelKwargs as ModelKwargsInterface,
+  PaginatedPermissionsAppSparse,
+  ResourcePermission,
+  SecurityClassificationPublic as SecurityClassificationPublicInterface,
   ToolAssistant as ToolAssistantInterface,
   UseTools as UseToolsInterface,
-  ModelKwargs as ModelKwargsInterface,
-  ModelFamily,
-  ModelStability,
-  ModelHostingLocation,
-  ModelOrg,
-  CompletionModel as CompletionModelInterface,
-  CompletionModelSparse as CompletionModelSparseInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class DatesAndId {
   @IsString()
@@ -50,62 +47,23 @@ export class ModelKwargs implements ModelKwargsInterface {
   top_p?: number | null;
 }
 
-export class CompletionModelSparse extends DatesAndId implements CompletionModelSparseInterface {
+export class PaginatedDefaults implements Pick<PaginatedPermissionsAppSparse, 'count' | 'permissions'> {
+  @IsInt()
+  count: number;
+}
+export class PaginatedPermissionsDefaults extends PaginatedDefaults implements Pick<PaginatedPermissionsAppSparse, 'count' | 'permissions'> {
+  @IsEnum(ResourcePermission, { each: true })
+  @IsOptional()
+  permissions?: ResourcePermission[];
+}
+export class SecurityClassificationPublic extends DatesAndId implements SecurityClassificationPublicInterface {
   @IsString()
   name: string;
   @IsString()
-  nickname: string;
-  @IsEnum(ModelFamily)
-  family: ModelFamily;
+  @IsNullable()
+  description: string | null;
   @IsNumber()
-  token_limit: number;
-  @IsBoolean()
-  is_deprecated: boolean;
-  @IsNumber()
-  @IsOptional()
-  @IsNullable()
-  nr_billion_parameters?: number | null;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  hf_link?: string | null;
-  @IsEnum(ModelStability)
-  stability: ModelStability;
-  @IsEnum(ModelHostingLocation)
-  hosting: ModelHostingLocation;
-  @IsBoolean()
-  @IsOptional()
-  @IsNullable()
-  open_source?: boolean | null;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  description?: string | null;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  deployment_name?: string | null;
-  @IsEnum(ModelOrg)
-  @IsOptional()
-  @IsNullable()
-  org?: ModelOrg | null;
-  @IsBoolean()
-  vision: boolean;
-  @IsBoolean()
-  reasoning: boolean;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  base_url?: string | null;
+  security_level: number;
 }
 
-export class CompletionModel extends CompletionModelSparse implements CompletionModelInterface {
-  @IsString()
-  @IsOptional()
-  is_org_enabled?: boolean;
-  @IsBoolean()
-  @IsOptional()
-  is_org_default?: boolean;
-}
-
-export type { UseToolsInterface, ModelKwargsInterface, CompletionModelSparseInterface, CompletionModelInterface };
+export type { ModelKwargsInterface, SecurityClassificationPublicInterface, UseToolsInterface };
