@@ -1,5 +1,5 @@
 import { AZURE_REGION, AZURE_SUBSCRIPTION_KEY, AZURE_TRANSLATOR_KEY } from '@/config';
-import { GetTranslationOptions, TranslationResponse } from '@/interfaces/azure-translation.interface';
+import { GetTranslationOptions, TranslationResponse } from '@/interfaces/azure.interface';
 import { logger } from '@/utils/logger';
 import axios from 'axios';
 import { HttpError } from 'routing-controllers';

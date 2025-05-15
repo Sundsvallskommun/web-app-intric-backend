@@ -2,10 +2,15 @@ import {
   InfoBlobMetadata as InfoBlobMetadataInterface,
   InfoBlobPublicNoText as InfoBlobPublicNoTextInterface,
   InfoBlobPublic as InfoBlobPublicInterface,
+  PaginatedResponseInfoBlobPublicNoText as PaginatedResponseInfoBlobPublicNoTextInterface,
+  PaginatedResponseInfoBlobPublic as PaginatedResponseInfoBlobPublicInterface,
+  JobPublic as JobPublicInterface,
+  Status,
+  Task,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { DatesAndId } from './common';
 
 class InfoBlobMetadata implements InfoBlobMetadataInterface {
@@ -40,4 +45,39 @@ export class InfoBlobPublicNoText extends DatesAndId implements InfoBlobPublicNo
 export class InfoBlobPublic extends InfoBlobPublicNoText implements InfoBlobPublicInterface {
   @IsString()
   text: string;
+}
+
+export class PaginatedResponseInfoBlobPublicNoText implements PaginatedResponseInfoBlobPublicNoTextInterface {
+  @ValidateNested({ each: true })
+  @Type(() => InfoBlobPublicNoText)
+  items: InfoBlobPublicNoTextInterface[];
+  @IsInt()
+  count: number;
+}
+
+export class PaginatedResponseInfoBlobPublic implements PaginatedResponseInfoBlobPublicInterface {
+  @ValidateNested({ each: true })
+  @Type(() => InfoBlobPublic)
+  items: InfoBlobPublicInterface[];
+  @IsInt()
+  count: number;
+}
+
+export class JobPublic extends DatesAndId implements JobPublicInterface {
+  @IsString()
+  @IsOptional()
+  @IsNullable()
+  name?: string | null;
+  @IsEnum(Status)
+  status: Status;
+  @IsEnum(Task)
+  task: Task;
+  @IsString()
+  @IsOptional()
+  @IsNullable()
+  result_location?: string | null;
+  @IsString()
+  @IsOptional()
+  @IsNullable()
+  finished_at?: string | null;
 }
