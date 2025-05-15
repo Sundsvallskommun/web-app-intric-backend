@@ -3,10 +3,11 @@ import {
   FilePublic as FilePublicInterface,
   FileRestrictions as FileRestrictionsInterface,
   Limit as LimitInterface,
+  PaginatedResponseFilePublic as PaginatedResponseFilePublicInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { DatesAndId } from './common';
 
 export class FilePublic extends DatesAndId implements FilePublicInterface {
@@ -43,4 +44,12 @@ export class FileRestrictions implements FileRestrictionsInterface {
   @ValidateNested()
   @Type(() => Limit)
   limit: LimitInterface;
+}
+
+export class PaginatedResponseFilePublic implements PaginatedResponseFilePublicInterface {
+  @ValidateNested({ each: true })
+  @Type(() => FilePublic)
+  items: FilePublicInterface[];
+  @IsInt()
+  count: number;
 }
