@@ -8,13 +8,15 @@ import {
   SessionMetadataPublic as SessionMetadataPublicInterface,
   SessionPublic as SessionPublicInterface,
   WebSearchResultPublic as WebSearchResultPublicInterface,
+  CompletionModel as CompletionModelInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { CompletionModel, CompletionModelInterface, DatesAndId, UseTools, UseToolsInterface } from './common';
+import { DatesAndId, UseTools, UseToolsInterface } from './common';
 import { InfoBlobPublicNoText } from './info-blob.response';
 import { FilePublic } from './file.response';
+import { CompletionModel } from './models.response';
 
 class SessionMetadataPublic extends DatesAndId implements SessionMetadataPublicInterface {
   @IsString()

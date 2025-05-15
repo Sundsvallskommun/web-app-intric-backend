@@ -1,37 +1,29 @@
 import {
   AssistantPublic as AssistantPublicInterface,
+  AssistantSparse as AssistantSparseInterface,
   AssistantType,
   CollectionPublic as CollectionPublicInterface,
-  EmbeddingModelFamily,
   EmbeddingModelPublicLegacy as EmbeddingModelPublicLegacyInterface,
   FilePublic as FilePublicInterface,
   FileRestrictions as FileRestrictionsInterface,
   IntegrationKnowledgeMetaData as IntegrationKnowledgeMetaDataInterface,
   IntegrationKnowledgePublicIntegrationTypeEnum,
   IntegrationKnowledgePublic as IntegrationKnowledgePublicInterface,
-  ModelHostingLocation,
-  ModelOrg,
-  ModelStability,
   PaginatedResponseAssistantPublic as PaginatedResponseAssistantPublicInterface,
   PromptPublic as PromptPublicInterface,
   ResourcePermission,
   UserSparse as UserSparseInterface,
   WebsitePublic as WebsitePublicInterface,
+  CompletionModelSparse as CompletionModelSparseInterface,
+  DefaultAssistant as DefaultAssistantInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsInt, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import {
-  CompletionModelSparse,
-  CompletionModelSparseInterface,
-  DatesAndId,
-  ModelKwargs,
-  ModelKwargsInterface,
-  UseTools,
-  UseToolsInterface,
-} from './common';
+import { DatesAndId, ModelKwargs, ModelKwargsInterface, UseTools, UseToolsInterface } from './common';
 import { FilePublic, FileRestrictions } from './file.response';
 import { CollectionPublic } from './group.response';
+import { CompletionModelSparse, EmbeddingModelPublicLegacy } from './models.response';
 import { WebsitePublic } from './website.response';
 
 class UserSparse extends DatesAndId implements UserSparseInterface {
@@ -59,50 +51,6 @@ class PromptPublic extends DatesAndId implements PromptPublicInterface {
   user: UserSparseInterface;
   @IsString()
   text: string;
-}
-
-class EmbeddingModelPublicLegacy extends DatesAndId implements EmbeddingModelPublicLegacyInterface {
-  @IsString()
-  name: string;
-  @IsEnum(EmbeddingModelFamily)
-  family: EmbeddingModelFamily;
-  @IsBoolean()
-  is_deprecated: boolean;
-  @IsBoolean()
-  open_source: boolean;
-  @IsNumber()
-  @IsOptional()
-  @IsNullable()
-  dimensions?: number | null;
-  @IsNumber()
-  @IsOptional()
-  @IsNullable()
-  max_input?: number | null;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  hf_link?: string | null;
-  @IsEnum(ModelStability)
-  stability: ModelStability;
-  @IsEnum(ModelHostingLocation)
-  hosting: ModelHostingLocation;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  description?: string | null;
-  @IsEnum(ModelOrg)
-  @IsOptional()
-  @IsNullable()
-  org?: ModelOrg | null;
-  @IsBoolean()
-  @IsOptional()
-  is_org_enabled?: boolean;
-  @IsBoolean()
-  @IsOptional()
-  can_access?: boolean;
-  @IsBoolean()
-  @IsOptional()
-  is_locked?: boolean;
 }
 
 class IntegrationKnowledgeMetaData implements IntegrationKnowledgeMetaDataInterface {
@@ -134,11 +82,38 @@ class IntegrationKnowledgePublic extends DatesAndId implements IntegrationKnowle
   task: any;
 }
 
-export class AssistantPublic extends DatesAndId implements AssistantPublicInterface {
-  @IsEnum(ResourcePermission, { each: true })
-  permissions?: ResourcePermission[];
+class AssistantCommon extends DatesAndId {
   @IsString()
   name: string;
+  @ValidateNested()
+  @Type(() => ModelKwargs)
+  completion_model_kwargs: ModelKwargsInterface;
+  @IsBoolean()
+  logging_enabled: boolean;
+  @IsEnum(ResourcePermission, { each: true })
+  @IsOptional()
+  permissions?: ResourcePermission[];
+  @IsBoolean()
+  @IsOptional()
+  published?: boolean;
+  @IsString()
+  @IsOptional()
+  @IsNullable()
+  description?: string | null;
+  @IsObject()
+  @IsOptional()
+  @IsNullable()
+  metadata_json?: object | null;
+  @IsEnum(AssistantType)
+  type: AssistantType;
+}
+
+export class AssistantSparse extends AssistantCommon implements AssistantSparseInterface {
+  @IsString()
+  user_id: string;
+}
+
+export class AssistantPublic extends AssistantCommon implements AssistantPublicInterface {
   @ValidateNested()
   @Type(() => PromptPublic)
   @IsOptional()
@@ -146,11 +121,6 @@ export class AssistantPublic extends DatesAndId implements AssistantPublicInterf
   prompt?: PromptPublicInterface | null;
   @IsString()
   space_id: string;
-  @ValidateNested()
-  @Type(() => ModelKwargs)
-  completion_model_kwargs: ModelKwargsInterface;
-  @IsBoolean()
-  logging_enabled: boolean;
   @ValidateNested({ each: true })
   @Type(() => FilePublic)
   attachments: FilePublicInterface[];
@@ -169,32 +139,21 @@ export class AssistantPublic extends DatesAndId implements AssistantPublicInterf
   @ValidateNested()
   @Type(() => CompletionModelSparse)
   completion_model: CompletionModelSparseInterface;
-  @IsBoolean()
-  @IsOptional()
-  published?: boolean;
   @ValidateNested()
   @Type(() => UserSparse)
   user: UserSparseInterface;
   @ValidateNested()
   @Type(() => UseTools)
   tools: UseToolsInterface;
-  @IsEnum(AssistantType)
-  type: AssistantType;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  description?: string | null;
   @IsBoolean()
   insight_enabled: boolean;
   @IsNumber()
   @IsOptional()
   @IsNullable()
   data_retention_days?: number | null;
-  @IsObject()
-  @IsOptional()
-  @IsNullable()
-  metadata_json?: object | null;
 }
+
+export class DefaultAssistant extends AssistantPublic implements DefaultAssistantInterface {}
 
 export class PaginatedResponseAssistantPublic implements PaginatedResponseAssistantPublicInterface {
   @ValidateNested({ each: true })
