@@ -13,7 +13,7 @@ import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class DatesAndId {
+export class DatesAndId {
   @IsString()
   @IsOptional()
   @IsNullable()
@@ -33,13 +33,13 @@ class ToolAssistant implements ToolAssistantInterface {
   handle: string;
 }
 
-class UseTools implements UseToolsInterface {
+export class UseTools implements UseToolsInterface {
   @ValidateNested({ each: true })
   @Type(() => ToolAssistant)
   assistants: ToolAssistantInterface[];
 }
 
-class ModelKwargs implements ModelKwargsInterface {
+export class ModelKwargs implements ModelKwargsInterface {
   @IsNumber()
   @IsOptional()
   @IsNullable()
@@ -50,7 +50,7 @@ class ModelKwargs implements ModelKwargsInterface {
   top_p?: number | null;
 }
 
-class CompletionModelSparse extends DatesAndId implements CompletionModelSparseInterface {
+export class CompletionModelSparse extends DatesAndId implements CompletionModelSparseInterface {
   @IsString()
   name: string;
   @IsString()
@@ -99,7 +99,7 @@ class CompletionModelSparse extends DatesAndId implements CompletionModelSparseI
   base_url?: string | null;
 }
 
-class CompletionModel extends CompletionModelSparse implements CompletionModelInterface {
+export class CompletionModel extends CompletionModelSparse implements CompletionModelInterface {
   @IsString()
   @IsOptional()
   is_org_enabled?: boolean;
@@ -108,5 +108,4 @@ class CompletionModel extends CompletionModelSparse implements CompletionModelIn
   is_org_default?: boolean;
 }
 
-export { DatesAndId, UseTools, ModelKwargs, CompletionModelSparse, CompletionModel };
 export type { UseToolsInterface, ModelKwargsInterface, CompletionModelSparseInterface, CompletionModelInterface };
