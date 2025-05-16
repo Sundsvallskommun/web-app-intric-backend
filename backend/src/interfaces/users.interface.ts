@@ -11,3 +11,10 @@ export interface UserSettings {
   userId: string;
   apiKey?: string;
 }
+
+export interface UserData {
+  name: string;
+  username: string;
+  isAdmin?: boolean;
+  apiKey?: string;
+}
