@@ -5,6 +5,8 @@ import {
   SecurityClassificationPublic as SecurityClassificationPublicInterface,
   ToolAssistant as ToolAssistantInterface,
   UseTools as UseToolsInterface,
+  ModelId as ModelIdInterface,
+  WebSearchResultPublic as WebSearchResultPublicInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
@@ -19,6 +21,11 @@ export class DatesAndId {
   @IsOptional()
   @IsNullable()
   updated_at?: string | null;
+  @IsString()
+  id: string;
+}
+
+export class ModelId implements ModelIdInterface {
   @IsString()
   id: string;
 }
@@ -66,4 +73,13 @@ export class SecurityClassificationPublic extends DatesAndId implements Security
   security_level: number;
 }
 
-export type { ModelKwargsInterface, SecurityClassificationPublicInterface, UseToolsInterface };
+export class WebSearchResultPublic implements WebSearchResultPublicInterface {
+  @IsString()
+  id: string;
+  @IsString()
+  title: string;
+  @IsString()
+  url: string;
+}
+
+export type { ModelKwargsInterface, SecurityClassificationPublicInterface, UseToolsInterface, WebSearchResultPublicInterface };
