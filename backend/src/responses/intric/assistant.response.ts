@@ -25,15 +25,7 @@ import { FilePublic, FileRestrictions } from './file.response';
 import { CollectionPublic } from './group.response';
 import { CompletionModelSparse, EmbeddingModelPublicLegacy } from './models.response';
 import { WebsitePublic } from './website.response';
-
-class UserSparse extends DatesAndId implements UserSparseInterface {
-  @IsString()
-  email: string;
-  @IsString()
-  @IsOptional()
-  @IsNullable()
-  username?: string | null;
-}
+import { UserSparse } from './user.response';
 
 class PromptPublic extends DatesAndId implements PromptPublicInterface {
   @IsEnum(ResourcePermission, { each: true })
