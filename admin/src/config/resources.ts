@@ -1,5 +1,5 @@
 import { Api } from '@data-contracts/backend/Api';
-import { Assistant, Host } from '@data-contracts/backend/data-contracts';
+import { AssistantSetting, Host } from '@data-contracts/backend/data-contracts';
 import { Resource } from '@interfaces/resource';
 
 export const apiService = new Api({
@@ -7,7 +7,7 @@ export const apiService = new Api({
   withCredentials: true,
 });
 
-const assistants: Resource<Assistant> = {
+const assistants: Resource<AssistantSetting> = {
   name: 'assistants',
   getOne: apiService.adminAsisstantControllerGetOne,
   getMany: apiService.adminAsisstantControllerGetMany,
