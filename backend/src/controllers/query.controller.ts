@@ -49,13 +49,11 @@ export class QueryController {
     try {
       const res = await this.intricApiService.post<Stream, AskAssistant>({ url, headers: { 'api-key': apiKey }, responseType, data });
       const datastream = res.data;
-      let i = 0;
       datastream.on('data', (buf: Buffer) => {
         return buf;
       });
 
       datastream.on('end', () => {
-        console.log('stream done');
         return response.end();
       });
       return response.send(res.data);
@@ -95,13 +93,11 @@ export class QueryController {
     try {
       const res = await this.intricApiService.post<Stream, AskAssistant>({ url, headers: { 'api-key': apiKey }, responseType, data });
       const datastream = res.data;
-      let i = 0;
       datastream.on('data', (buf: Buffer) => {
         return buf;
       });
 
       datastream.on('end', () => {
-        console.log('stream done');
         return response.end();
       });
       return response.send(res.data);
