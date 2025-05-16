@@ -5,7 +5,7 @@ import {
   PartialAssistantUpdatePublic,
   PromptCreate,
 } from '@/data-contracts/intric/data-contracts';
-import { ModelKwargs } from '@/responses/intric/common';
+import { ModelId, ModelKwargs } from '@/responses/intric/common';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
@@ -17,11 +17,6 @@ export class NewPrompt implements PromptCreate {
   @IsOptional()
   @IsNullable()
   description?: string | null;
-}
-
-export class ModelId implements ModelIdInterface {
-  @IsString()
-  id: string;
 }
 
 export class AssistantGuard implements AssistantGuardType {

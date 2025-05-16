@@ -7,13 +7,12 @@ import {
   SessionFeedbackValueEnum,
   SessionMetadataPublic as SessionMetadataPublicInterface,
   SessionPublic as SessionPublicInterface,
-  WebSearchResultPublic as WebSearchResultPublicInterface,
   CompletionModel as CompletionModelInterface,
 } from '@/data-contracts/intric/data-contracts';
 import { IsNullable } from '@/utils/custom-validation-classes';
 import { Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { DatesAndId, UseTools, UseToolsInterface } from './common';
+import { DatesAndId, UseTools, UseToolsInterface, WebSearchResultPublic, WebSearchResultPublicInterface } from './common';
 import { InfoBlobPublicNoText } from './info-blob.response';
 import { FilePublic } from './file.response';
 import { CompletionModel } from './models.response';
@@ -43,15 +42,6 @@ export class CursorPaginatedResponseSessionMetadataPublic implements CursorPagin
   total_count: number;
   @IsNumber()
   count: number;
-}
-
-class WebSearchResultPublic implements WebSearchResultPublicInterface {
-  @IsString()
-  id: string;
-  @IsString()
-  title: string;
-  @IsString()
-  url: string;
 }
 
 class Message implements MessageInterface {
@@ -93,7 +83,7 @@ class Message implements MessageInterface {
   web_search_references: WebSearchResultPublicInterface[];
 }
 
-class SessionFeedback implements SessionFeedbackInterface {
+export class SessionFeedback implements SessionFeedbackInterface {
   @IsEnum(SessionFeedbackValueEnum)
   value: SessionFeedbackValueEnum;
   @IsString()

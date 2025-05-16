@@ -13,7 +13,7 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { DatesAndId } from './common';
 
-class InfoBlobMetadata implements InfoBlobMetadataInterface {
+export class InfoBlobMetadata implements InfoBlobMetadataInterface {
   @IsString()
   @IsOptional()
   @IsNullable()
