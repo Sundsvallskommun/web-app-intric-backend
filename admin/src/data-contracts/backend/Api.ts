@@ -11,21 +11,41 @@
 
 import {
   ApiKeyApiResponse,
-  Assistant,
-  AssistantApiResponse,
-  AssistantsApiResponse,
-  CreateAssistantDto,
-  CreateGroupDto,
+  ApiResponseAzureToken,
+  ApiResponseTranslation,
+  Applications,
+  AskResponse,
+  AssistantPublic,
+  AssistantSetting,
+  AssistantSettingApiResponse,
+  AssistantSettingsApiResponse,
+  CollectionPublic,
+  CreateSpaceAssistantDto,
+  CursorPaginatedResponseSessionMetadataPublic,
+  FilePublic,
+  HealthCheckStatus,
   HostApiResponse,
   HostsApiResponse,
+  InfoBlobPublic,
+  JobPublic,
+  PaginatedResponseAssistantPublic,
+  PaginatedResponseFilePublic,
+  PaginatedResponseInfoBlobPublic,
+  PaginatedResponseInfoBlobPublicNoText,
+  PaginatedResponseSpacePublic,
+  PaginatedResponseSpaceSparse,
+  SessionFeedback,
+  SessionPublic,
+  SpacePublic,
   TranslationDto,
-  UpdateAssistant,
   UpdateAssistantDto,
+  UpdateAssistantSetting,
   UpdateGroupDto,
   UpdateHost,
   UpdateInfoBlobDto,
   UpdateInfoBlobsDto,
   UserApiResponse,
+  UserPublic,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
@@ -49,11 +69,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Admin Asisstant
    * @name AdminAsisstantControllerGetMany
-   * @summary Get all assistants
+   * @summary Get all assistant settings
    * @request GET:/api/admin/assistants
    */
   adminAsisstantControllerGetMany = (params: RequestParams = {}) =>
-    this.request<AssistantsApiResponse, any>({
+    this.request<AssistantSettingsApiResponse, any>({
       path: `/api/admin/assistants`,
       method: 'GET',
       ...params,
@@ -63,11 +83,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Admin Asisstant
    * @name AdminAsisstantControllerCreate
-   * @summary Creates a new assistant
+   * @summary Create new assistant setting
    * @request POST:/api/admin/assistants
    */
-  adminAsisstantControllerCreate = (data?: Assistant, params: RequestParams = {}) =>
-    this.request<AssistantApiResponse, any>({
+  adminAsisstantControllerCreate = (data?: AssistantSetting, params: RequestParams = {}) =>
+    this.request<AssistantSettingApiResponse, any>({
       path: `/api/admin/assistants`,
       method: 'POST',
       body: data,
@@ -79,11 +99,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Admin Asisstant
    * @name AdminAsisstantControllerGetOne
-   * @summary Get a single assistant
+   * @summary Get a single assistant setting
    * @request GET:/api/admin/assistants/{id}
    */
   adminAsisstantControllerGetOne = (id: number, params: RequestParams = {}) =>
-    this.request<AssistantApiResponse, any>({
+    this.request<AssistantSettingApiResponse, any>({
       path: `/api/admin/assistants/${id}`,
       method: 'GET',
       ...params,
@@ -93,11 +113,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Admin Asisstant
    * @name AdminAsisstantControllerUpdate
-   * @summary Updates an assistant
+   * @summary Update assistant setting
    * @request PATCH:/api/admin/assistants/{id}
    */
-  adminAsisstantControllerUpdate = (id: number, data?: UpdateAssistant, params: RequestParams = {}) =>
-    this.request<AssistantApiResponse, any>({
+  adminAsisstantControllerUpdate = (id: number, data?: UpdateAssistantSetting, params: RequestParams = {}) =>
+    this.request<AssistantSettingApiResponse, any>({
       path: `/api/admin/assistants/${id}`,
       method: 'PATCH',
       body: data,
@@ -109,7 +129,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Admin Asisstant
    * @name AdminAsisstantControllerDelete
-   * @summary Deletes an assistant
+   * @summary Delete assistant
    * @request DELETE:/api/admin/assistants/{id}
    */
   adminAsisstantControllerDelete = (id: number, params: RequestParams = {}) =>
@@ -153,11 +173,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Assistant
    * @name AssistantControllerGetAssistants
-   * @summary Get assistants
+   * @summary Get assitants from Intric
    * @request GET:/api/assistants
    */
   assistantControllerGetAssistants = (params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<PaginatedResponseAssistantPublic, any>({
       path: `/api/assistants`,
       method: 'GET',
       ...params,
@@ -166,16 +186,20 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags Assistant
-   * @name AssistantControllerCreateAssistant
-   * @summary Create assistant
-   * @request POST:/api/assistants
+   * @name AssistantControllerBatchGetAssistantsById
+   * @summary Batch get assitants from Intric
+   * @request GET:/api/assistants/batch
    */
-  assistantControllerCreateAssistant = (data?: CreateAssistantDto, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/assistants`,
-      method: 'POST',
-      body: data,
-      type: ContentType.Json,
+  assistantControllerBatchGetAssistantsById = (
+    query: {
+      id: object[];
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<PaginatedResponseAssistantPublic, any>({
+      path: `/api/assistants/batch`,
+      method: 'GET',
+      query: query,
       ...params,
     });
   /**
@@ -183,11 +207,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Assistant
    * @name AssistantControllerGetAssistantById
-   * @summary Get assistant by id
+   * @summary Get assitant from Intric
    * @request GET:/api/assistants/{id}
    */
   assistantControllerGetAssistantById = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<AssistantPublic, any>({
       path: `/api/assistants/${id}`,
       method: 'GET',
       ...params,
@@ -197,11 +221,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Assistant
    * @name AssistantControllerUpdateAssistant
-   * @summary Update assistant
+   * @summary Update Intric assistant
    * @request POST:/api/assistants/{id}
    */
   assistantControllerUpdateAssistant = (id: string, data?: UpdateAssistantDto, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<AssistantPublic, any>({
       path: `/api/assistants/${id}`,
       method: 'POST',
       body: data,
@@ -213,7 +237,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Assistant
    * @name AssistantControllerDeleteAssistant
-   * @summary Delete assistant
+   * @summary Delete Intric assistant
    * @request DELETE:/api/assistants/{id}
    */
   assistantControllerDeleteAssistant = (id: string, params: RequestParams = {}) =>
@@ -227,11 +251,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Assistant
    * @name AssistantControllerGetAssistantSessions
-   * @summary Get assistant sessions
+   * @summary Get sessions from Intric assistant
    * @request GET:/api/assistants/{id}/sessions
    */
   assistantControllerGetAssistantSessions = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<CursorPaginatedResponseSessionMetadataPublic, any>({
       path: `/api/assistants/${id}/sessions`,
       method: 'GET',
       ...params,
@@ -241,11 +265,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Assistant
    * @name AssistantControllerGetAssistantSession
-   * @summary Get assistant session
+   * @summary Get session from Intric assistant
    * @request GET:/api/assistants/{id}/sessions/{session_id}
    */
   assistantControllerGetAssistantSession = (id: string, sessionId: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<SessionPublic, any>({
       path: `/api/assistants/${id}/sessions/${sessionId}`,
       method: 'GET',
       ...params,
@@ -259,7 +283,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request GET:/api/azure/login
    */
   azureControllerGetAzureToken = (params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<ApiResponseAzureToken, any>({
       path: `/api/azure/login`,
       method: 'GET',
       ...params,
@@ -273,7 +297,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/azure/translate
    */
   azureControllerTranslate = (data?: TranslationDto, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<ApiResponseTranslation, any>({
       path: `/api/azure/translate`,
       method: 'POST',
       body: data,
@@ -284,56 +308,12 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * No description
    *
    * @tags Group
-   * @name GroupControllerGetUserGroups
-   * @summary Get user groups
-   * @request GET:/api/groups
-   */
-  groupControllerGetUserGroups = (params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/groups`,
-      method: 'GET',
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Group
-   * @name GroupControllerCreateGroup
-   * @summary Create group
-   * @request POST:/api/groups
-   */
-  groupControllerCreateGroup = (data?: CreateGroupDto, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/groups`,
-      method: 'POST',
-      body: data,
-      type: ContentType.Json,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Group
-   * @name GroupControllerGetPublicGroups
-   * @summary Get public groups
-   * @request GET:/api/groups/public
-   */
-  groupControllerGetPublicGroups = (params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/groups/public`,
-      method: 'GET',
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Group
    * @name GroupControllerGetGroupById
-   * @summary Get group by id
+   * @summary Get group
    * @request GET:/api/groups/{id}
    */
   groupControllerGetGroupById = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<CollectionPublic, any>({
       path: `/api/groups/${id}`,
       method: 'GET',
       ...params,
@@ -347,7 +327,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/groups/{id}
    */
   groupControllerUpdateGroup = (id: string, data?: UpdateGroupDto, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<CollectionPublic, any>({
       path: `/api/groups/${id}`,
       method: 'POST',
       body: data,
@@ -373,11 +353,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Group
    * @name GroupControllerGetGroupInfoblobs
-   * @summary Get group infoblobs
+   * @summary Get infoblobs for group
    * @request GET:/api/groups/{id}/info-blobs
    */
   groupControllerGetGroupInfoblobs = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<PaginatedResponseInfoBlobPublicNoText, any>({
       path: `/api/groups/${id}/info-blobs`,
       method: 'GET',
       ...params,
@@ -391,7 +371,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/groups/{id}/info-blobs
    */
   groupControllerAddGroupInfoblobs = (id: string, data?: UpdateInfoBlobsDto, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<PaginatedResponseInfoBlobPublic, any>({
       path: `/api/groups/${id}/info-blobs`,
       method: 'POST',
       body: data,
@@ -407,7 +387,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/groups/{id}/info-blobs/upload-files
    */
   groupControllerUploadFiles = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<JobPublic, any>({
       path: `/api/groups/${id}/info-blobs/upload-files`,
       method: 'POST',
       ...params,
@@ -421,7 +401,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request GET:/api/health/up
    */
   healthControllerUp = (params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<HealthCheckStatus, any>({
       path: `/api/health/up`,
       method: 'GET',
       ...params,
@@ -435,7 +415,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request GET:/api/info-blobs
    */
   infoBlobControllerGetInfoblobs = (params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<PaginatedResponseInfoBlobPublicNoText, any>({
       path: `/api/info-blobs`,
       method: 'GET',
       ...params,
@@ -449,7 +429,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request GET:/api/info-blobs/{id}
    */
   infoBlobControllerGetInfoblobById = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<InfoBlobPublic, any>({
       path: `/api/info-blobs/${id}`,
       method: 'GET',
       ...params,
@@ -463,7 +443,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/info-blobs/{id}
    */
   infoBlobControllerUpdateInfoblob = (id: string, data?: UpdateInfoBlobDto, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<InfoBlobPublic, any>({
       path: `/api/info-blobs/${id}`,
       method: 'POST',
       body: data,
@@ -479,7 +459,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request DELETE:/api/info-blobs/{id}
    */
   infoBlobControllerDeleteInfoblob = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<InfoBlobPublic, any>({
       path: `/api/info-blobs/${id}`,
       method: 'DELETE',
       ...params,
@@ -489,7 +469,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Query
    * @name QueryControllerAskAssistant
-   * @summary Ask assistant
+   * @summary Ask question to assistant
    * @request POST:/api/assistants/{assistant_id}/sessions
    */
   queryControllerAskAssistant = (
@@ -500,7 +480,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     data?: any,
     params: RequestParams = {}
   ) =>
-    this.request<void, any>({
+    this.request<AskResponse, any>({
       path: `/api/assistants/${assistantId}/sessions`,
       method: 'POST',
       query: query,
@@ -513,7 +493,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Query
    * @name QueryControllerAskFollowup
-   * @summary Ask followup
+   * @summary Ask follow up question to assistant
    * @request POST:/api/assistants/{assistant_id}/sessions/{session_id}
    */
   queryControllerAskFollowup = (
@@ -525,7 +505,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     data?: any,
     params: RequestParams = {}
   ) =>
-    this.request<void, any>({
+    this.request<AskResponse, any>({
       path: `/api/assistants/${assistantId}/sessions/${sessionId}`,
       method: 'POST',
       query: query,
@@ -538,11 +518,16 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    *
    * @tags Query
    * @name QueryControllerGiveFeedback
-   * @summary Give feedback
+   * @summary Leave feedback
    * @request POST:/api/assistants/{assistant_id}/sessions/{session_id}/feedback
    */
-  queryControllerGiveFeedback = (assistantId: string, sessionId: string, data?: any, params: RequestParams = {}) =>
-    this.request<void, any>({
+  queryControllerGiveFeedback = (
+    assistantId: string,
+    sessionId: string,
+    data?: SessionFeedback,
+    params: RequestParams = {}
+  ) =>
+    this.request<SessionFeedback, any>({
       path: `/api/assistants/${assistantId}/sessions/${sessionId}/feedback`,
       method: 'POST',
       body: data,
@@ -620,6 +605,178 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   adminHostsControllerDelete = (id: number, params: RequestParams = {}) =>
     this.request<void, any>({
       path: `/api/admin/hosts/${id}`,
+      method: 'DELETE',
+      ...params,
+    });
+  /**
+   * @description Get spaces available for you.
+   *
+   * @tags Space
+   * @name SpaceControllerGetUserSpaces
+   * @summary Get spaces
+   * @request GET:/api/spaces
+   */
+  spaceControllerGetUserSpaces = (
+    query?: {
+      /** Include your personal space */
+      personal?: boolean;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<PaginatedResponseSpaceSparse, any>({
+      path: `/api/spaces`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Space
+   * @name SpaceControllerGetPersonalSpace
+   * @summary Get personal space
+   * @request GET:/api/spaces/personal
+   */
+  spaceControllerGetPersonalSpace = (params: RequestParams = {}) =>
+    this.request<SpacePublic, any>({
+      path: `/api/spaces/personal`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Space
+   * @name SpaceControllerBatchGetSpaces
+   * @summary Batch get spaces
+   * @request GET:/api/spaces/batch
+   */
+  spaceControllerBatchGetSpaces = (
+    query: {
+      /** List of space ids */
+      id: object[];
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<PaginatedResponseSpacePublic, any>({
+      path: `/api/spaces/batch`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Space
+   * @name SpaceControllerGetSingleSpace
+   * @summary Get space
+   * @request GET:/api/spaces/{id}
+   */
+  spaceControllerGetSingleSpace = (id: string, params: RequestParams = {}) =>
+    this.request<SpacePublic, any>({
+      path: `/api/spaces/${id}`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Space
+   * @name SpaceControllerGetSingleSpaceApplications
+   * @summary Get applications for space
+   * @request GET:/api/spaces/{id}/applications
+   */
+  spaceControllerGetSingleSpaceApplications = (id: string, params: RequestParams = {}) =>
+    this.request<Applications, any>({
+      path: `/api/spaces/${id}/applications`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Space
+   * @name SpaceControllerCreateSpaceAssistant
+   * @summary Create assistant in space
+   * @request POST:/api/spaces/{id}/applications/assistants
+   */
+  spaceControllerCreateSpaceAssistant = (id: string, data?: CreateSpaceAssistantDto, params: RequestParams = {}) =>
+    this.request<AssistantPublic, any>({
+      path: `/api/spaces/${id}/applications/assistants`,
+      method: 'POST',
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags User
+   * @name UserControllerGetMe
+   * @summary Get my user from Intric
+   * @request GET:/api/users/me
+   */
+  userControllerGetMe = (params: RequestParams = {}) =>
+    this.request<UserPublic, any>({
+      path: `/api/users/me`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags File
+   * @name FileControllerGetFiles
+   * @summary Get files
+   * @request GET:/api/files
+   */
+  fileControllerGetFiles = (params: RequestParams = {}) =>
+    this.request<PaginatedResponseFilePublic, any>({
+      path: `/api/files`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags File
+   * @name FileControllerUploadFile
+   * @summary Upload file
+   * @request POST:/api/files
+   */
+  fileControllerUploadFile = (data?: any, params: RequestParams = {}) =>
+    this.request<FilePublic, any>({
+      path: `/api/files`,
+      method: 'POST',
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags File
+   * @name FileControllerGetFile
+   * @summary Get file
+   * @request GET:/api/files/{id}
+   */
+  fileControllerGetFile = (id: string, params: RequestParams = {}) =>
+    this.request<FilePublic, any>({
+      path: `/api/files/${id}`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags File
+   * @name FileControllerDeleteFile
+   * @summary Delete file
+   * @request DELETE:/api/files/{id}
+   */
+  fileControllerDeleteFile = (id: string, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/files/${id}`,
       method: 'DELETE',
       ...params,
     });
