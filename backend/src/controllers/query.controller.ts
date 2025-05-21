@@ -32,7 +32,7 @@ export class QueryController {
     @QueryParam('stream') stream: boolean,
     @Body() body: Pick<AskAssistant, 'question' | 'files'> & { body?: string },
     @Res() response: Response<AskResponseInterface | Stream>,
-  ): Promise<Response<AskResponseInterface>> {
+  ): Promise<AskResponseInterface | Stream> {
     //NOTE: Added same type as Intric, but kept the old type for backwards compatibility
     const query = body?.question ?? body?.body;
     if (!query || query === '') {
@@ -56,7 +56,7 @@ export class QueryController {
       datastream.on('end', () => {
         return response.end();
       });
-      return response.send(res.data);
+      return res.data;
     } catch (e) {
       logger.error('Error sending question to assistant.', e);
       throw new HttpError(e?.httpCode ?? 500, e?.message ?? 'Could not communicate with assistant');
@@ -75,8 +75,8 @@ export class QueryController {
     @Param('session_id') session_id: string,
     @QueryParam('stream') stream: boolean,
     @Body() body: Pick<AskAssistant, 'question' | 'files'> & { body?: string },
-    @Res() response: Response<AskResponseInterface | Stream>,
-  ): Promise<Response<AskResponseInterface>> {
+    @Res() response: Response<AskResponseInterface>,
+  ): Promise<Stream> {
     //NOTE: Added same type as Intric, but kept the old type for backwards compatibility
     const query = body?.question ?? body?.body;
     if (!query || query === '') {
@@ -100,7 +100,7 @@ export class QueryController {
       datastream.on('end', () => {
         return response.end();
       });
-      return response.send(res.data);
+      return res.data;
     } catch (e) {
       logger.error('Error sending question to assistant.', e);
       throw new HttpError(e?.httpCode ?? 500, e?.message ?? 'Could not communicate with assistant');
