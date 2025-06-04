@@ -2,29 +2,9 @@ import { exec } from 'child_process';
 import path from 'path';
 import fs from 'node:fs';
 
-import { API_BASE_URL } from './config/index';
+import { APIS, API_BASE_URL } from './config/index';
 
 const PATH_TO_OUTPUT_DIR = path.resolve(process.cwd(), './src/data-contracts');
-
-//Subscribed APIS as lowercased
-const APIS = [
-  {
-    name: 'organization',
-    version: '1.0',
-  },
-  {
-    name: 'employee',
-    version: '1.0',
-  },
-  {
-    name: 'messaging',
-    version: '3.0',
-  },
-  {
-    name: 'mdbuilder',
-    version: '1.0',
-  },
-];
 
 const stdout = (error, stdout, stderr) => {
   if (error) {

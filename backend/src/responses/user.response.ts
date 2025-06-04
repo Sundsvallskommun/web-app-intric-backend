@@ -1,13 +1,9 @@
 import ApiResponse from '@/interfaces/api-service.interface';
+import { UserData } from '@/interfaces/users.interface';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-// export class Permissions implements IPermissions {
-//   @IsBoolean()
-//   canEditSystemMessages: boolean;
-// }
-
-export class User implements User {
+export class User implements UserData {
   @IsString()
   name: string;
   @IsString()
@@ -18,13 +14,9 @@ export class User implements User {
   @IsString()
   @IsOptional()
   apiKey?: string;
-  // role: InternalRole;
-  // @ValidateNested()
-  // @Type(() => Permissions)
-  // permissions: Permissions;
 }
 
-export class UserApiResponse implements ApiResponse<User> {
+export class UserApiResponse implements ApiResponse<UserData> {
   @ValidateNested()
   @Type(() => User)
   data: User;

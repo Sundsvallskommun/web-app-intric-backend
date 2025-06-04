@@ -3,11 +3,10 @@ import { EditorToolbar } from '@components/editor-toolbar/editor-toolbar';
 import LoaderFullScreen from '@components/loader/loader-fullscreen';
 import { defaultInformationFields } from '@config/defaults';
 import resources, { apiService } from '@config/resources';
-import { Api } from '@data-contracts/backend/Api';
-import { Assistant } from '@data-contracts/backend/data-contracts';
+import { AssistantSetting } from '@data-contracts/backend/data-contracts';
 import EditLayout from '@layouts/edit-layout/edit-layout.component';
 import { useUserStore } from '@services/user-service/user-service';
-import { Button, FormControl, FormLabel, Icon, Input, useConfirm, useDialogShow, useSnackbar } from '@sk-web-gui/react';
+import { Button, FormControl, FormLabel, Icon, Input, useSnackbar } from '@sk-web-gui/react';
 import { getFormattedFields } from '@utils/formatted-field';
 import { useRouteGuard } from '@utils/routeguard.hook';
 import { useCrudHelper } from '@utils/use-crud-helpers';
@@ -34,7 +33,7 @@ export const EditAssistant: React.FC = () => {
 
   const { handleGetOne, handleCreate, handleUpdate } = useCrudHelper(resource);
 
-  type DataType = Partial<Assistant>;
+  type DataType = Partial<AssistantSetting>;
 
   const form = useForm<DataType>({
     defaultValues: defaultValues,

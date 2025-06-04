@@ -12,7 +12,7 @@ const hashMiddleware = async (req: Request, res: Response, next: NextFunction) =
     console.log({ user, assistant_id, app, hash });
   }
   try {
-    if (apikey) {
+    if (apikey && apikey !== 'undefined') {
       next();
     } else if (verifyHash(user, assistant_id, app, hash)) {
       next();

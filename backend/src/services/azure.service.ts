@@ -1,4 +1,5 @@
 import { AZURE_REGION, AZURE_SUBSCRIPTION_KEY, AZURE_TRANSLATOR_KEY } from '@/config';
+import { GetTranslationOptions, TranslationResponse } from '@/interfaces/azure.interface';
 import { logger } from '@/utils/logger';
 import axios from 'axios';
 import { HttpError } from 'routing-controllers';
@@ -29,23 +30,6 @@ export const getToken = async () => {
     throw new HttpError(501, 'Error getting Azure Token');
   }
 };
-
-interface GetTranslationOptions {
-  text: string[];
-  sourcelanguage: string;
-  targetlanguage: string;
-}
-
-interface Translation {
-  text: string;
-  to: string;
-}
-
-interface TranslationData {
-  translations: Translation[];
-}
-
-type TranslationResponse = TranslationData[];
 
 export const getTranslations: (options: GetTranslationOptions) => Promise<string[]> = async ({ text, sourcelanguage, targetlanguage }) => {
   const url = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
