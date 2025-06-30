@@ -14,6 +14,7 @@ import { AdminHostsController } from './controllers/admin/hosts.controller';
 import { SpaceController } from './controllers/space.controller';
 import { UserController } from './controllers/user.controller';
 import { FileController } from './controllers/file.controller';
+import { ConversationController } from './controllers/conversation.controller';
 
 validateEnv();
 
@@ -32,6 +33,7 @@ const app = new App([
   SpaceController,
   UserController,
   FileController,
+  ConversationController,
 ]);
 
 app.listen();
