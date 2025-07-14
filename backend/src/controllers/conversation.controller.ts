@@ -29,7 +29,6 @@ export class ConversationController {
     description: `Provide either an assistant_id or a group_chat_id to start a new conversation with an assistant or group chat.\n
       Provide session_id to continue a conversation.`,
   })
-  //   @UseBefore(validationMiddleware(ConversationRequestDto, 'body'))
   @ResponseSchema(AskResponse)
   async conversation(
     @Req() req: Request,
