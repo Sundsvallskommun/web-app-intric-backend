@@ -1,6 +1,6 @@
 {
   "name": "intric-backend-proxy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TypeScript + Express + Routing Controllers API Server",
   "author": "",
   "license": "ISC",
