@@ -62,19 +62,17 @@ export const EditorToolbar: React.FC<ToolbarProps> = ({ resource, isDirty, id })
       ></Button>
 
       {((!!remove && id) || !id) && (
-        <>
-          <Button
-            variant="tertiary"
-            color="error"
-            showBackground={false}
-            iconButton
-            aria-label={capitalize(t('common:remove', { resource: t(`${resource}:name_one`) }))}
-            size="sm"
-            onClick={() => onRemove()}
-          >
-            <Icon icon={<Trash />} />
-          </Button>
-        </>
+        <Button
+          variant="tertiary"
+          color="error"
+          showBackground={false}
+          iconButton
+          aria-label={capitalize(t('common:remove', { resource: t(`${resource}:name_one`) }))}
+          size="sm"
+          onClick={() => onRemove()}
+        >
+          <Icon icon={<Trash />} />
+        </Button>
       )}
     </Button.Group>
   );

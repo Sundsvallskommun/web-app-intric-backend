@@ -86,7 +86,7 @@ export const ListResources: React.FC<ListResourcesProps> = ({ resource, headers:
 
   const editHeader: AutoTableHeader = {
     label: 'edit',
-    property: 'id',
+    property: '',
     isColumnSortable: false,
     screenReaderOnly: true,
     sticky: true,
@@ -110,14 +110,16 @@ export const ListResources: React.FC<ListResourcesProps> = ({ resource, headers:
     ) || [];
 
   const formattedData = useMemo(() => data.map((row) => getFormattedFields(row)), [data]);
-
+  const autoHeaders = [...translatedHeaders, ...(update ? [editHeader] : [])];
   return (
     <div>
       {formattedData.length > 0 ?
         <AutoTable
           pageSize={15}
           autodata={formattedData}
-          autoheaders={[...translatedHeaders, ...(update ? [editHeader] : [])]}
+          autoheaders={autoHeaders.filter(
+            (header, index) => autoHeaders.map((head) => head.label).indexOf(header.label) === index
+          )}
         />
       : <h3>{capitalize(t('common:no_resources', { resources: t(`${resource}:name_zero`) }))}</h3>}
     </div>

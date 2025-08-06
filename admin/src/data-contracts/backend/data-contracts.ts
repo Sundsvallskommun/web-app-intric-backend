@@ -793,6 +793,17 @@ export interface PaginatedResponseSpacePublic {
   count: number;
 }
 
+export interface ConversationRequestDto {
+  assistant_id?: string;
+  group_chat_id?: string;
+  session_id?: string;
+  question: string;
+  files?: ModelId[];
+  stream?: boolean;
+  use_tools?: UseTools | null;
+  use_web_search?: boolean;
+}
+
 export enum PaginatedPermissionsDefaultsPermissionsEnum {
   Read = 'read',
   Create = 'create',
