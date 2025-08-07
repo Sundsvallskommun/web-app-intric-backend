@@ -1,22 +1,3 @@
-import 'reflect-metadata';
-import { existsSync, mkdirSync } from 'fs';
-import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import createMemoryStore from 'memorystore';
-import createFileStore from 'session-file-store';
-import express from 'express';
-import helmet from 'helmet';
-import hpp from 'hpp';
-import morgan from 'morgan';
-import passport from 'passport';
-import { Strategy, VerifiedCallback } from 'passport-saml';
-import bodyParser from 'body-parser';
-import { useExpressServer, getMetadataArgsStorage, Redirect } from 'routing-controllers';
-import { routingControllersToSpec } from 'routing-controllers-openapi';
-import swaggerUi from 'swagger-ui-express';
 import {
   BASE_URL_PREFIX,
   CREDENTIALS,
@@ -32,6 +13,7 @@ import {
   SAML_LOGOUT_CALLBACK_URL,
   SAML_PRIVATE_KEY,
   SAML_PUBLIC_KEY,
+  SAML_SUCCESS_REDIRECT,
   SECRET_KEY,
   SESSION_MEMORY,
   SWAGGER_ENABLED,
@@ -39,14 +21,34 @@ import {
 import errorMiddleware from '@middlewares/error.middleware';
 import rateLimiter from '@middlewares/rate-limiter.middleware';
 import { logger, stream } from '@utils/logger';
-import { Profile } from './interfaces/profile.interface';
-import { HttpException } from './exceptions/HttpException';
-import { join } from 'path';
-import { isValidUrl } from './utils/util';
-import { additionalConverters } from './utils/custom-validation-classes';
-import { User } from './interfaces/users.interface';
+import bodyParser from 'body-parser';
+import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import express from 'express';
+import session from 'express-session';
+import { existsSync, mkdirSync } from 'fs';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import createMemoryStore from 'memorystore';
+import morgan from 'morgan';
+import passport from 'passport';
+import { Strategy, VerifiedCallback } from 'passport-saml';
+import { join } from 'path';
+import 'reflect-metadata';
+import { getMetadataArgsStorage, useExpressServer } from 'routing-controllers';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
+import createFileStore from 'session-file-store';
+import swaggerUi from 'swagger-ui-express';
+import { HttpException } from './exceptions/HttpException';
+import { Profile } from './interfaces/profile.interface';
+import { User } from './interfaces/users.interface';
+import { additionalConverters } from './utils/custom-validation-classes';
+import { isValidOrigin } from './utils/isValidOrigin';
 import prisma from './utils/prisma';
+import { isValidUrl } from './utils/util';
 
 const corsWhitelistFromEnv = ORIGIN.split(',');
 
@@ -253,13 +255,17 @@ class App {
         next();
       },
       (req, res, next) => {
-        const successRedirect = req.query.successRedirect;
+        let successRedirect = SAML_SUCCESS_REDIRECT;
+        if (typeof req.query.successRedirect === 'string' && isValidUrl(req.query.successRedirect) && isValidOrigin(req.query.successRedirect)) {
+          successRedirect = req.query.successRedirect;
+        }
+
         samlStrategy.logout(req as any, () => {
           req.logout(err => {
             if (err) {
               return next(err);
             }
-            res.redirect(successRedirect as string);
+            res.redirect(successRedirect);
           });
         });
       },
@@ -274,10 +280,12 @@ class App {
         let successRedirect: URL, failureRedirect: URL;
         let urls = req?.body?.RelayState.split(',');
 
-        if (isValidUrl(urls[0])) {
+        if (isValidUrl(urls[0]) && isValidOrigin(urls[0])) {
           successRedirect = new URL(urls[0]);
+        } else {
+          successRedirect = new URL(SAML_SUCCESS_REDIRECT);
         }
-        if (isValidUrl(urls[1])) {
+        if (isValidUrl(urls[1]) && isValidOrigin(urls[1])) {
           failureRedirect = new URL(urls[1]);
         } else {
           failureRedirect = successRedirect;
@@ -304,12 +312,12 @@ class App {
 
       let urls = req?.body?.RelayState?.split(',') || ['/'];
 
-      if (isValidUrl(urls?.[0])) {
+      if (isValidUrl(urls?.[0]) && isValidOrigin(urls[0])) {
         successRedirect = new URL(urls[0]);
       } else {
-        successRedirect = new URL('/');
+        successRedirect = new URL(SAML_SUCCESS_REDIRECT);
       }
-      if (isValidUrl(urls?.[1])) {
+      if (isValidUrl(urls?.[1]) && isValidOrigin(urls[1])) {
         failureRedirect = new URL(urls[1]);
       } else {
         failureRedirect = successRedirect;
