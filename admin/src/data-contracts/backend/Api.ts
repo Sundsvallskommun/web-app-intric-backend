@@ -20,6 +20,7 @@ import {
   AssistantSettingApiResponse,
   AssistantSettingsApiResponse,
   CollectionPublic,
+  ConversationRequestDto,
   CreateSpaceAssistantDto,
   CursorPaginatedResponseSessionMetadataPublic,
   FilePublic,
@@ -386,10 +387,18 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @summary Upload a file to a group
    * @request POST:/api/groups/{id}/info-blobs/upload-files
    */
-  groupControllerUploadFiles = (id: string, params: RequestParams = {}) =>
+  groupControllerUploadFiles = (
+    id: string,
+    data: {
+      files?: File[];
+    },
+    params: RequestParams = {}
+  ) =>
     this.request<JobPublic, any>({
       path: `/api/groups/${id}/info-blobs/upload-files`,
       method: 'POST',
+      body: data,
+      type: ContentType.FormData,
       ...params,
     });
   /**
@@ -744,12 +753,18 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @summary Upload file
    * @request POST:/api/files
    */
-  fileControllerUploadFile = (data?: any, params: RequestParams = {}) =>
+  fileControllerUploadFile = (
+    data?: {
+      /** @format binary */
+      upload_file: File;
+    },
+    params: RequestParams = {}
+  ) =>
     this.request<FilePublic, any>({
       path: `/api/files`,
       method: 'POST',
       body: data,
-      type: ContentType.Json,
+      type: ContentType.FormData,
       ...params,
     });
   /**
@@ -778,6 +793,104 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
     this.request<void, any>({
       path: `/api/files/${id}`,
       method: 'DELETE',
+      ...params,
+    });
+  /**
+   * @description Provide either an assistant_id or a group_chat_id to start a new conversation with an assistant or group chat. Provide session_id to continue a conversation.
+   *
+   * @tags Conversation
+   * @name ConversationControllerConversation
+   * @summary Chat with an assistant or group chat
+   * @request POST:/api/conversations
+   */
+  conversationControllerConversation = (data?: ConversationRequestDto, params: RequestParams = {}) =>
+    this.request<AskResponse, any>({
+      path: `/api/conversations`,
+      method: 'POST',
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * @description Gets conversations (sessions) for an assistant or group chat. Provide either an assistant_id or a group_chat_id.
+   *
+   * @tags Conversation
+   * @name ConversationControllerGetConversations
+   * @summary List conversations
+   * @request GET:/api/conversations
+   */
+  conversationControllerGetConversations = (
+    query?: {
+      assistant_id?: string;
+      group_chat_id?: string;
+      limit?: number;
+      cursor?: string;
+      previous?: boolean;
+    },
+    params: RequestParams = {}
+  ) =>
+    this.request<CursorPaginatedResponseSessionMetadataPublic, any>({
+      path: `/api/conversations`,
+      method: 'GET',
+      query: query,
+      ...params,
+    });
+  /**
+   * @description Get a specific conversation (session) by its session id.
+   *
+   * @tags Conversation
+   * @name ConversationControllerGetConversation
+   * @summary Get conversation by session id
+   * @request GET:/api/conversations/{session_id}
+   */
+  conversationControllerGetConversation = (sessionId: string, params: RequestParams = {}) =>
+    this.request<SessionPublic, any>({
+      path: `/api/conversations/${sessionId}`,
+      method: 'GET',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Conversation
+   * @name ConversationControllerDeleteConversation
+   * @summary Delete a conversation
+   * @request DELETE:/api/conversations/{session_id}
+   */
+  conversationControllerDeleteConversation = (sessionId: string, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/conversations/${sessionId}`,
+      method: 'DELETE',
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Conversation
+   * @name ConversationControllerGiveFeedback
+   * @summary Leave feedback for a conversation
+   * @request POST:/api/conversations/{session_id}/feedback
+   */
+  conversationControllerGiveFeedback = (sessionId: string, data?: SessionFeedback, params: RequestParams = {}) =>
+    this.request<SessionPublic, any>({
+      path: `/api/conversations/${sessionId}/feedback`,
+      method: 'POST',
+      body: data,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Conversation
+   * @name ConversationControllerSetTitle
+   * @summary Set title for a conversation
+   * @request POST:/api/conversations/{session_id}/title
+   */
+  conversationControllerSetTitle = (sessionId: string, params: RequestParams = {}) =>
+    this.request<SessionPublic, any>({
+      path: `/api/conversations/${sessionId}/title`,
+      method: 'POST',
       ...params,
     });
 }

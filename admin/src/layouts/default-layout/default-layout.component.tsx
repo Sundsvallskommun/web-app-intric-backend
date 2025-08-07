@@ -1,12 +1,9 @@
 import { Menu } from '@components/menu/menu';
 import { UserMenu } from '@components/user-menu/user.menu.component';
-import { useUserStore } from '@services/user-service/user-service';
 import { Logo } from '@sk-web-gui/react';
-import { useLocalStorage } from '@utils/use-localstorage.hook';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useShallow } from 'zustand/react/shallow';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -34,10 +31,15 @@ export default function DefaultLayout({ title, postTitle, headerSubtitle, childr
         <meta name="description" content={`${process.env.NEXT_PUBLIC_APP_NAME} admin`} />
       </Head>
 
-      <NextLink href="#content" legacyBehavior passHref>
-        <a onClick={setFocusToMain} accessKey="s" className="next-link-a" data-cy="systemMessage-a">
-          {t('layout:header.goto_content')}
-        </a>
+      <NextLink
+        href="#content"
+        passHref
+        onClick={setFocusToMain}
+        accessKey="s"
+        className="next-link-a"
+        data-cy="systemMessage-a"
+      >
+        {t('layout:header.goto_content')}
       </NextLink>
 
       <div className="flex w-full min-h-screen h-full">
