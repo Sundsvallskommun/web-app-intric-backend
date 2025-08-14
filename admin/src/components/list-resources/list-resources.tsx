@@ -86,7 +86,7 @@ export const ListResources: React.FC<ListResourcesProps> = ({ resource, headers:
 
   const editHeader: AutoTableHeader = {
     label: 'edit',
-    property: '',
+    property: 'id',
     isColumnSortable: false,
     screenReaderOnly: true,
     sticky: true,
